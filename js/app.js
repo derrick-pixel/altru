@@ -2,6 +2,34 @@
    Altru — Shared Application Logic
    ═══════════════════════════════════════════════════════════ */
 
+/* ─── Mobile Menu ──────────────────────────────────────────── */
+function toggleMenu() {
+  const nav    = document.getElementById('mainNav');
+  const toggle = document.getElementById('menuToggle');
+  if (!nav || !toggle) return;
+  nav.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+// Close menu when a nav link is clicked (mobile)
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#mainNav a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('mainNav')?.classList.remove('open');
+      document.getElementById('menuToggle')?.classList.remove('open');
+    });
+  });
+
+  // Highlight active page
+  const page = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('#mainNav a').forEach(link => {
+    const href = link.getAttribute('href');
+    if (href === page || (page === '' && href === 'index.html')) {
+      link.classList.add('active');
+    }
+  });
+});
+
 /* ─── IPC Charities ────────────────────────────────────────── */
 const IPC_CHARITIES = [
   {
