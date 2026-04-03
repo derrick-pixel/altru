@@ -119,36 +119,32 @@
     <div class="container">
       <div class="title-accent" style="display:block;margin:0 auto 1rem;"></div>
       <h2 class="section-title">Charities You Can Support</h2>
-      <p class="section-sub lead">All are IPC-registered and tax-deductible in Singapore</p>
+      <p class="section-sub lead">All are IPC-registered and tax-deductible in Singapore — tap any to learn more</p>
+      <div id="landingCharityGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin-top:2rem;"></div>
+    </div>
+  </section>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:2rem;">
-        <div class="charity-option" style="cursor:default;">
-          <div class="charity-icon">🤝</div>
-          <div><div class="charity-name">Community Chest</div><div class="charity-desc">Social service agencies across SG</div></div>
+  <!-- Charity Detail Modal -->
+  <div id="charityModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:1rem;" onclick="closeCharityModal(event)">
+    <div style="background:white;border-radius:var(--radius);max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden;" onclick="event.stopPropagation()">
+      <div id="charityModalHeader" style="background:linear-gradient(135deg,#3D0812,#C8102E);padding:1.5rem 1.5rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+        <div id="charityModalIcon" style="font-size:2.8rem;line-height:1;"></div>
+        <div>
+          <div id="charityModalName" style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:white;line-height:1.2;"></div>
+          <div id="charityModalIpc" style="font-size:0.78rem;color:rgba(255,255,255,0.65);margin-top:0.3rem;"></div>
         </div>
-        <div class="charity-option" style="cursor:default;">
-          <div class="charity-icon">🏥</div>
-          <div><div class="charity-name">Singapore Red Cross</div><div class="charity-desc">Humanitarian aid & emergency relief</div></div>
-        </div>
-        <div class="charity-option" style="cursor:default;">
-          <div class="charity-icon">🎗️</div>
-          <div><div class="charity-name">Children's Cancer Foundation</div><div class="charity-desc">Supporting children battling cancer</div></div>
-        </div>
-        <div class="charity-option" style="cursor:default;">
-          <div class="charity-icon">🧠</div>
-          <div><div class="charity-name">Alzheimer's Disease Association</div><div class="charity-desc">Dementia care & caregiver support</div></div>
-        </div>
-        <div class="charity-option" style="cursor:default;">
-          <div class="charity-icon">⭐</div>
-          <div><div class="charity-name">Make-A-Wish Foundation SG</div><div class="charity-desc">Granting wishes to critically ill children</div></div>
-        </div>
-        <div class="charity-option" style="cursor:default;border-style:dashed;">
-          <div class="charity-icon">➕</div>
-          <div><div class="charity-name">10 Charities Available</div><div class="charity-desc">More choices when you create a gift</div></div>
+        <button onclick="document.getElementById('charityModal').style.display='none'" style="margin-left:auto;background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.2rem;width:32px;height:32px;border-radius:50%;cursor:pointer;flex-shrink:0;">✕</button>
+      </div>
+      <div style="padding:1.5rem;">
+        <p id="charityModalDesc" style="font-size:0.95rem;color:var(--text);margin-bottom:0.75rem;line-height:1.6;"></p>
+        <div id="charityModalBeneficiary" style="background:var(--warm-white);border-radius:var(--radius-sm);padding:0.65rem 0.9rem;font-size:0.84rem;color:var(--text-muted);margin-bottom:1.25rem;"></div>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <a id="charityModalWebsite" href="#" target="_blank" rel="noopener" class="btn btn-outline" style="flex:1;text-align:center;font-size:0.88rem;">🌐 Visit Website</a>
+          <a id="charityModalGive" href="donor.html" class="btn btn-primary" style="flex:1;text-align:center;font-size:0.88rem;">🧧 Give to This Charity</a>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
   <!-- ─── Trust & Transparency ──────────────────────────── -->
   <section class="section" id="trust-transparency" style="background:var(--warm-white);">
@@ -267,6 +263,59 @@
       </p>
     </div>
   </footer>
+
+  <script>
+    // Render charity grid on landing page
+    document.addEventListener('DOMContentLoaded', () => {
+      const grid = document.getElementById('landingCharityGrid');
+      if (!grid || typeof IPC_CHARITIES === 'undefined') return;
+
+      IPC_CHARITIES.forEach(c => {
+        const card = document.createElement('button');
+        card.className = 'charity-option';
+        card.style.cssText = 'width:100%;text-align:left;border:none;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;';
+        card.innerHTML = `
+          <div class="charity-icon">${c.icon}</div>
+          <div style="flex:1;">
+            <div class="charity-name">${c.name}</div>
+            <div class="charity-desc">${c.desc}</div>
+          </div>
+          <div style="font-size:0.75rem;color:var(--red);font-weight:700;margin-left:0.5rem;flex-shrink:0;">Info →</div>`;
+        card.addEventListener('mouseenter', () => { card.style.transform = 'translateY(-2px)'; card.style.boxShadow = '0 6px 20px rgba(200,16,46,0.15)'; });
+        card.addEventListener('mouseleave', () => { card.style.transform = ''; card.style.boxShadow = ''; });
+        card.addEventListener('click', () => openCharityModal(c));
+        grid.appendChild(card);
+      });
+    });
+
+    function openCharityModal(c) {
+      document.getElementById('charityModalIcon').textContent = c.icon;
+      document.getElementById('charityModalName').textContent = c.name;
+      document.getElementById('charityModalIpc').textContent = 'IPC No: ' + c.ipcNo;
+      document.getElementById('charityModalDesc').textContent = c.desc;
+      document.getElementById('charityModalBeneficiary').innerHTML = '<strong>Beneficiaries:</strong> ' + c.beneficiary;
+      document.getElementById('charityModalWebsite').href = c.website;
+      document.getElementById('charityModalGive').href = 'donor.html';
+      const modal = document.getElementById('charityModal');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCharityModal(e) {
+      if (e.target === document.getElementById('charityModal')) {
+        document.getElementById('charityModal').style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Close on Escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.getElementById('charityModal').style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    });
+  </script>
 
 </body>
 </html>
