@@ -88,9 +88,9 @@
               <span class="badge badge-gold" style="margin-left:0.5rem;">Tax Deductible</span>
             </label>
             <div class="range-wrapper">
-              <input type="range" id="charitySlider" min="0" max="100" value="50" step="5" />
+              <input type="range" id="charitySlider" min="50" max="50" value="50" step="10" />
               <div class="range-labels">
-                <span>S$0</span>
+                <span>S$50 min</span>
                 <span id="sliderMid">—</span>
                 <span id="sliderMax">S$—</span>
               </div>
@@ -279,17 +279,28 @@
     /* ── Split Update ── */
     function updateSplit() {
       const total   = parseFloat(document.getElementById('totalAmount').value) || 0;
-      const pct     = parseInt(document.getElementById('charitySlider').value);
-      const charity = +(total * pct / 100).toFixed(2);
-      const couple  = +(total - charity).toFixed(2);
+      const slider  = document.getElementById('charitySlider');
 
-      document.getElementById('sliderMax').textContent = `S$${total.toFixed(0)}`;
-      document.getElementById('sliderMid').textContent = `S$${(total * 0.5).toFixed(0)}`;
+      // Update slider bounds: min S$50, max = total, step S$10
+      const maxCharity = total > 0 ? Math.floor(total / 10) * 10 : 50;
+      slider.min   = 50;
+      slider.max   = maxCharity > 50 ? maxCharity : 50;
+      slider.step  = 10;
+      // Clamp current value within new bounds
+      if (parseFloat(slider.value) < 50)          slider.value = 50;
+      if (parseFloat(slider.value) > maxCharity)  slider.value = maxCharity;
+
+      const charity = parseFloat(slider.value) || 50;
+      const couple  = +(total - charity).toFixed(2);
+      const pct     = total > 0 ? (charity / total) * 100 : 100;
+
+      document.getElementById('sliderMax').textContent = total ? `S$${maxCharity} (100%)` : 'S$—';
+      document.getElementById('sliderMid').textContent = total ? `S$${Math.round(maxCharity / 2)}` : '—';
 
       document.getElementById('barCharity').style.width = pct + '%';
       document.getElementById('barCouple').style.width  = (100 - pct) + '%';
-      document.getElementById('barCharityLabel').textContent = pct > 8 ? `${pct}%` : '';
-      document.getElementById('barCoupleLabel').textContent  = (100 - pct) > 8 ? `${100 - pct}%` : '';
+      document.getElementById('barCharityLabel').textContent = pct > 8 ? `S$${charity}` : '';
+      document.getElementById('barCoupleLabel').textContent  = (100 - pct) > 8 ? `S$${couple.toFixed(0)}` : '';
 
       document.getElementById('legendCharity').textContent = total ? `S$${charity.toFixed(2)}` : 'S$—';
       document.getElementById('legendCouple').textContent  = total ? `S$${couple.toFixed(2)}`  : 'S$—';
