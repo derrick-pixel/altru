@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Send a Gift — GiveHeart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+  <!-- ─── Header ─────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <span class="logo-mark">囍</span>
+        GiveHeart
+      </a>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="couple.html">Couple Portal</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ─── Page Hero ──────────────────────────────────────── -->
+  <div class="page-hero">
+    <div class="container">
+      <div class="hero-badge" style="margin:0 auto 1rem;">🧧 &nbsp;Red Packet, Reimagined</div>
+      <h1>Create Your Gift</h1>
+      <p>Pre-load a meaningful gift — part for the couple, part for a charity in their name.</p>
+    </div>
+  </div>
+
+  <!-- ─── Main ────────────────────────────────────────────── -->
+  <main class="section-sm">
+    <div class="container-sm">
+
+      <!-- Step Indicator -->
+      <div class="steps mb-4" id="stepIndicator">
+        <div class="step-item active" data-step="1">
+          <div class="step-circle">1</div>
+          <div class="step-label">Gift Details</div>
+        </div>
+        <div class="step-item" data-step="2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Choose Charity</div>
+        </div>
+        <div class="step-item" data-step="3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Your Info</div>
+        </div>
+        <div class="step-item" data-step="4">
+          <div class="step-circle">4</div>
+          <div class="step-label">Pay & Share</div>
+        </div>
+      </div>
+
+      <!-- ── STEP 1: Gift Details ── -->
+      <div id="step1" class="card fade-in-up">
+        <div class="card-header">
+          <h3 style="margin:0;color:var(--red);">🎁 Step 1 — Gift Details</h3>
+        </div>
+        <div class="card-body">
+
+          <div class="form-group">
+            <label class="form-label">Couple's Name <span class="required">*</span></label>
+            <input type="text" id="coupleName" class="form-control" placeholder="e.g. Wei Jie &amp; Lin Hui" maxlength="60" />
+            <div class="form-hint">As you'd like it to appear on the gift</div>
+            <div class="form-error" id="err-coupleName">Please enter the couple's name.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Total Gift Amount <span class="required">*</span></label>
+            <div class="input-prefix">
+              <span>S$</span>
+              <input type="number" id="totalAmount" placeholder="388" min="50" max="99999" step="1" />
+            </div>
+            <div class="form-hint">Traditional auspicious amounts: S$88, S$168, S$388, S$888</div>
+            <div class="form-error" id="err-totalAmount">Please enter a valid amount (min S$50).</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Minimum Charity Donation
+              <span class="badge badge-gold" style="margin-left:0.5rem;">Tax Deductible</span>
+            </label>
+            <div class="range-wrapper">
+              <input type="range" id="charitySlider" min="0" max="100" value="50" step="5" />
+              <div class="range-labels">
+                <span>S$0</span>
+                <span id="sliderMid">—</span>
+                <span id="sliderMax">S$—</span>
+              </div>
+            </div>
+
+            <!-- Split visualizer -->
+            <div class="split-bar mt-2">
+              <div class="split-charity" id="barCharity" style="width:50%">
+                <span id="barCharityLabel">50%</span>
+              </div>
+              <div class="split-couple" id="barCouple" style="width:50%">
+                <span id="barCoupleLabel">50%</span>
+              </div>
+            </div>
+            <div class="split-legend mt-1">
+              <div class="split-legend-item">
+                <div class="legend-dot dot-red"></div>
+                <span>To Charity: <strong id="legendCharity">S$—</strong></span>
+              </div>
+              <div class="split-legend-item">
+                <div class="legend-dot dot-gold"></div>
+                <span>To Couple: <strong id="legendCouple">S$—</strong></span>
+              </div>
+            </div>
+
+            <div class="alert alert-info mt-2">
+              💡 The couple will receive their portion upon accepting the gift. The charity amount is donated in the couple's name, giving them 250% tax relief.
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-full" onclick="goStep(2)">
+            Continue → Choose Charity
+          </button>
+        </div>
+      </div>
+
+      <!-- ── STEP 2: Choose Charity ── -->
+      <div id="step2" class="card fade-in-up hidden">
+        <div class="card-header">
+          <h3 style="margin:0;color:var(--red);">🏛️ Step 2 — Choose an IPC Charity</h3>
+        </div>
+        <div class="card-body">
+          <p class="mb-3">All charities below are IPC-registered. Donations qualify for 250% tax deduction in Singapore.</p>
+          <div class="charity-grid" id="charityList"></div>
+          <div class="form-error mt-2" id="err-charity" style="display:none;">Please select a charity.</div>
+          <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+            <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
+            <button class="btn btn-primary" style="flex:1" onclick="goStep(3)">Continue → Your Info</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 3: Donor Info ── -->
+      <div id="step3" class="card fade-in-up hidden">
+        <div class="card-header">
+          <h3 style="margin:0;color:var(--red);">👤 Step 3 — Your Information</h3>
+        </div>
+        <div class="card-body">
+
+          <div class="form-group">
+            <label class="form-label">Your Name <span class="required">*</span></label>
+            <input type="text" id="donorName" class="form-control" placeholder="e.g. Ah Kow Tan" maxlength="60" />
+            <div class="form-error" id="err-donorName">Please enter your name.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Your Email <span class="required">*</span></label>
+            <input type="email" id="donorEmail" class="form-control" placeholder="e.g. ahkow@email.com" />
+            <div class="form-hint">We'll send you a receipt for your gift record.</div>
+            <div class="form-error" id="err-donorEmail">Please enter a valid email address.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Your Mobile (optional)</label>
+            <div class="input-prefix">
+              <span>+65</span>
+              <input type="tel" id="donorPhone" placeholder="9123 4567" maxlength="8" />
+            </div>
+          </div>
+
+          <div class="alert alert-warning">
+            🔒 Your personal information is used only for gift tracking and tax receipt purposes. It is never shared publicly.
+          </div>
+
+          <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+            <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
+            <button class="btn btn-primary" style="flex:1" onclick="generateGift()">Generate Gift Link & QR →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 4: Pay & Share ── -->
+      <div id="step4" class="card fade-in-up hidden">
+        <div class="card-header">
+          <h3 style="margin:0;color:var(--red);">✅ Step 4 — Pay via PayNow &amp; Share</h3>
+        </div>
+        <div class="card-body">
+
+          <!-- Gift summary -->
+          <div class="card mb-3" style="border-color:var(--red);background:var(--red-light);">
+            <div class="card-body" style="padding:1.25rem;">
+              <div class="d-flex justify-between align-center mb-2">
+                <h4 style="color:var(--red);margin:0;">🎁 Your Gift Summary</h4>
+                <span class="badge badge-red" id="s4GiftId"></span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;font-size:0.9rem;">
+                <div><span class="text-muted">To:</span> <strong id="s4CoupleName">—</strong></div>
+                <div><span class="text-muted">From:</span> <strong id="s4DonorName">—</strong></div>
+                <div><span class="text-muted">Total:</span> <strong id="s4Total" class="text-red">—</strong></div>
+                <div><span class="text-muted">Charity:</span> <strong id="s4CharityName">—</strong></div>
+                <div><span class="text-muted">Charity Amount:</span> <strong id="s4CharityAmt" class="text-red">—</strong></div>
+                <div><span class="text-muted">Couple Receives:</span> <strong id="s4CoupleAmt" class="text-gold">—</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PayNow QR -->
+          <h4 class="mb-2">1. Scan to Pay via PayNow</h4>
+          <div class="qr-box mb-3">
+            <div id="qrcode"></div>
+            <div>
+              <div class="fw-bold" id="qrAmount" style="font-size:1.3rem;color:var(--red);"></div>
+              <div class="caption text-muted">Scan with any Singapore banking app</div>
+              <div class="caption text-muted" id="qrRef"></div>
+            </div>
+            <div class="alert alert-warning" style="text-align:left;max-width:340px;">
+              📱 <strong>Demo Mode:</strong> QR encodes real PayNow format. Replace UEN in <code>app.js</code> with your platform's UEN before going live.
+            </div>
+          </div>
+
+          <!-- Gift link -->
+          <h4 class="mb-2">2. Share This Gift Link with the Couple</h4>
+          <p class="mb-2 caption text-muted">After paying, send this link to <strong id="s4CoupleNameLink">—</strong> so they can claim their gift and the charity donation.</p>
+          <div class="share-box mb-2">
+            <input type="text" id="giftLink" readonly />
+            <button onclick="copyGiftLink()">📋 Copy</button>
+          </div>
+          <button class="btn btn-primary btn-full mb-2" onclick="shareGiftLink()">
+            📤 Share via WhatsApp / SMS
+          </button>
+
+          <div class="divider">or mark as done</div>
+
+          <button class="btn btn-outline btn-full" onclick="markPaid()">
+            ✓ I have paid — Mark as Sent
+          </button>
+
+          <div id="paidConfirm" class="alert alert-success mt-2 hidden">
+            🎉 Gift marked as sent! The couple will receive a notification when they open the link.
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ─── Footer ─────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <p>囍 GiveHeart &nbsp;|&nbsp; <a href="index.html">Home</a> &nbsp;·&nbsp; <a href="couple.html">Couple Portal</a></p>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    /* ── State ── */
+    let selectedCharityId = null;
+    let currentGift = null;
+
+    /* ── Init ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Pre-fill couple name if passed via URL
+      const preCouple = getParam('couple');
+      const preName   = getParam('name');
+      if (preCouple) document.getElementById('coupleName').value = decodeURIComponent(preCouple);
+      if (preName)   document.getElementById('donorName').value  = decodeURIComponent(preName);
+
+      // Slider init
+      document.getElementById('totalAmount').addEventListener('input', updateSplit);
+      document.getElementById('charitySlider').addEventListener('input', updateSplit);
+      updateSplit();
+
+      // Render charity list
+      renderCharityOptions('charityList', null, id => { selectedCharityId = id; });
+    });
+
+    /* ── Split Update ── */
+    function updateSplit() {
+      const total   = parseFloat(document.getElementById('totalAmount').value) || 0;
+      const pct     = parseInt(document.getElementById('charitySlider').value);
+      const charity = +(total * pct / 100).toFixed(2);
+      const couple  = +(total - charity).toFixed(2);
+
+      document.getElementById('sliderMax').textContent = `S$${total.toFixed(0)}`;
+      document.getElementById('sliderMid').textContent = `S$${(total * 0.5).toFixed(0)}`;
+
+      document.getElementById('barCharity').style.width = pct + '%';
+      document.getElementById('barCouple').style.width  = (100 - pct) + '%';
+      document.getElementById('barCharityLabel').textContent = pct > 8 ? `${pct}%` : '';
+      document.getElementById('barCoupleLabel').textContent  = (100 - pct) > 8 ? `${100 - pct}%` : '';
+
+      document.getElementById('legendCharity').textContent = total ? `S$${charity.toFixed(2)}` : 'S$—';
+      document.getElementById('legendCouple').textContent  = total ? `S$${couple.toFixed(2)}`  : 'S$—';
+    }
+
+    /* ── Validation Helpers ── */
+    function showErr(id, show) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = show ? 'block' : 'none';
+    }
+    function val(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+    /* ── Step Navigation ── */
+    function goStep(n) {
+      if (n === 2 && !validateStep1()) return;
+      if (n === 3 && !validateStep2()) return;
+
+      [1,2,3,4].forEach(i => {
+        document.getElementById(`step${i}`).classList.toggle('hidden', i !== n);
+      });
+
+      document.querySelectorAll('.step-item').forEach(el => {
+        const s = parseInt(el.dataset.step);
+        el.classList.remove('active', 'done');
+        if (s === n) el.classList.add('active');
+        if (s < n)  el.classList.add('done');
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function validateStep1() {
+      let ok = true;
+      const couple = val('coupleName');
+      const total  = parseFloat(document.getElementById('totalAmount').value);
+      if (!couple) { showErr('err-coupleName', true); ok = false; } else showErr('err-coupleName', false);
+      if (!total || total < 50) { showErr('err-totalAmount', true); ok = false; } else showErr('err-totalAmount', false);
+      return ok;
+    }
+
+    function validateStep2() {
+      if (!selectedCharityId) {
+        document.getElementById('err-charity').style.display = 'block';
+        return false;
+      }
+      document.getElementById('err-charity').style.display = 'none';
+      return true;
+    }
+
+    function validateStep3() {
+      let ok = true;
+      const name  = val('donorName');
+      const email = val('donorEmail');
+      if (!name) { showErr('err-donorName', true); ok = false; } else showErr('err-donorName', false);
+      if (!email || !email.includes('@')) { showErr('err-donorEmail', true); ok = false; } else showErr('err-donorEmail', false);
+      return ok;
+    }
+
+    /* ── Generate Gift ── */
+    function generateGift() {
+      if (!validateStep3()) return;
+
+      const total      = parseFloat(document.getElementById('totalAmount').value);
+      const pct        = parseInt(document.getElementById('charitySlider').value);
+      const charity    = getCharity(selectedCharityId);
+      const charityAmt = +(total * pct / 100).toFixed(2);
+      const coupleAmt  = +(total - charityAmt).toFixed(2);
+
+      const gift = {
+        id:          uuid(),
+        donorName:   val('donorName'),
+        donorEmail:  val('donorEmail'),
+        donorPhone:  val('donorPhone'),
+        coupleName:  val('coupleName'),
+        totalAmount: total,
+        charityAmount: charityAmt,
+        personalAmount: coupleAmt,
+        charityId:   selectedCharityId,
+        charityName: charity.name,
+        charityIcon: charity.icon,
+        status:      'pending',
+        createdAt:   Date.now(),
+      };
+
+      saveGift(gift);
+      currentGift = gift;
+
+      populateStep4(gift);
+      goStep(4);
+    }
+
+    function populateStep4(gift) {
+      document.getElementById('s4GiftId').textContent       = `#${gift.id.slice(0,8).toUpperCase()}`;
+      document.getElementById('s4CoupleName').textContent   = gift.coupleName;
+      document.getElementById('s4DonorName').textContent    = gift.donorName;
+      document.getElementById('s4Total').textContent        = fmt(gift.totalAmount);
+      document.getElementById('s4CharityName').textContent  = gift.charityName;
+      document.getElementById('s4CharityAmt').textContent   = fmt(gift.charityAmount);
+      document.getElementById('s4CoupleAmt').textContent    = fmt(gift.personalAmount);
+      document.getElementById('s4CoupleNameLink').textContent = gift.coupleName;
+
+      // PayNow QR
+      const qrString = buildPayNowQR({
+        amount:     gift.totalAmount,
+        reference:  `GH-${gift.id.slice(0,8).toUpperCase()}`,
+        expiryDate: todayPlus(30),
+      });
+      renderQR('qrcode', qrString, 200);
+      document.getElementById('qrAmount').textContent = `Pay ${fmt(gift.totalAmount)}`;
+      document.getElementById('qrRef').textContent    = `Ref: GH-${gift.id.slice(0,8).toUpperCase()}`;
+
+      // Gift link
+      const link = createGiftLink(gift);
+      document.getElementById('giftLink').value = link;
+    }
+
+    function copyGiftLink() {
+      const link = document.getElementById('giftLink').value;
+      copyText(link, '✓ Gift link copied!');
+    }
+
+    function shareGiftLink() {
+      const link  = document.getElementById('giftLink').value;
+      const title = `🧧 A GiveHeart Gift for ${currentGift?.coupleName || 'You'}`;
+      const text  = `Wishing you a lifetime of love and blessings! Here's a meaningful wedding gift — part goes to a charity in your name. 🌸`;
+      shareOrCopy(link, title, text);
+    }
+
+    function markPaid() {
+      if (currentGift) {
+        currentGift.status = 'paid';
+        saveGift(currentGift);
+      }
+      document.getElementById('paidConfirm').classList.remove('hidden');
+      showToast('🎉 Gift marked as sent!');
+    }
+
+    /* ── Override selectCharity to capture selection ── */
+    function handleCharitySelect(id) {
+      selectedCharityId = id;
+    }
+    window.handleCharitySelect = handleCharitySelect;
+
+    // Patch selectCharity in renderCharityOptions to use handleCharitySelect
+    window.selectCharity = function(id, containerId) {
+      document.querySelectorAll(`#${containerId} .charity-option`).forEach(el => {
+        const sel = el.dataset.charity === id;
+        el.classList.toggle('selected', sel);
+        el.querySelector('.charity-check').textContent = sel ? '✓' : '';
+      });
+      selectedCharityId = id;
+      document.getElementById('err-charity').style.display = 'none';
+    };
+  </script>
+</body>
+</html>

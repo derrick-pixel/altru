@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wedding Dashboard — GiveHeart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ─── Header ─────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <span class="logo-mark">囍</span>
+        GiveHeart
+      </a>
+      <nav class="nav-links">
+        <a href="donor.html">Send a Gift</a>
+        <a href="index.html">Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ─── VIEW: INCOMING GIFT CLAIM ────────────────────────── -->
+  <div id="viewGiftClaim" class="hidden">
+    <div class="page-hero">
+      <div class="container">
+        <div class="hero-badge" style="margin:0 auto 1rem;">🧧 You have received a GiveHeart gift!</div>
+        <h1 id="heroCoupleName">Congratulations!</h1>
+        <p id="heroFromDonor" style="color:rgba(255,255,255,0.8);">A gift is waiting for you</p>
+      </div>
+    </div>
+
+    <main class="section-sm">
+      <div class="container-sm">
+
+        <!-- Gift Detail Card -->
+        <div class="card fade-in-up mb-3">
+          <div class="card-header" style="background:linear-gradient(135deg,var(--red-light),var(--gold-light));">
+            <div class="d-flex justify-between align-center">
+              <h3 style="margin:0;color:var(--red);">🎁 Your Gift</h3>
+              <span class="badge badge-gold" id="claimGiftId"></span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="stat-grid">
+              <div class="stat-card">
+                <div class="stat-number" id="claimTotal">—</div>
+                <div class="stat-label">Total Gift</div>
+              </div>
+              <div class="stat-card" style="border-color:var(--gold);">
+                <div class="stat-number" id="claimPersonal">—</div>
+                <div class="stat-label">Your Portion</div>
+              </div>
+              <div class="stat-card" style="border-color:var(--red);">
+                <div class="stat-number text-red" id="claimCharity">—</div>
+                <div class="stat-label">To Charity</div>
+              </div>
+            </div>
+
+            <div class="charity-option selected mb-3" style="cursor:default;margin-top:1rem;">
+              <div class="charity-icon" id="claimCharityIcon">🤝</div>
+              <div>
+                <div class="charity-name" id="claimCharityName">—</div>
+                <div class="charity-desc">IPC Certified · 250% Tax Deductible</div>
+              </div>
+              <span class="badge badge-gold">IPC</span>
+            </div>
+
+            <div class="alert alert-info">
+              💡 Provide your NRIC below to receive the charity donation in your name. This unlocks <strong>250% tax deduction</strong> on the charity portion.
+            </div>
+          </div>
+        </div>
+
+        <!-- NRIC & Accept Form -->
+        <div class="card fade-in-up mb-3">
+          <div class="card-header">
+            <h3 style="margin:0;color:var(--red);">📋 Accept Your Gift</h3>
+          </div>
+          <div class="card-body">
+
+            <div class="form-group">
+              <label class="form-label">Your NRIC / FIN <span class="required">*</span>
+                <span class="badge badge-gold" style="margin-left:0.4rem;">For Tax Relief</span>
+              </label>
+              <input type="text" id="coupleNRIC" class="form-control nric-field"
+                     placeholder="S1234567A" maxlength="9"
+                     oninput="this.value=this.value.toUpperCase()" />
+              <div class="form-hint">Used to register the charity donation in your name. Not stored publicly.</div>
+              <div class="form-error" id="err-nric">Please enter a valid Singapore NRIC/FIN.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Your Email <span class="required">*</span></label>
+              <input type="email" id="coupleEmail" class="form-control" placeholder="couple@email.com" />
+              <div class="form-hint">Tax receipt will be sent here.</div>
+              <div class="form-error" id="err-coupleEmail">Please enter a valid email.</div>
+            </div>
+
+            <div class="alert alert-warning">
+              🔒 Your NRIC is encrypted and used only for IRAS tax relief filing. GiveHeart does not share this with third parties.
+            </div>
+
+            <button class="btn btn-primary btn-full btn-lg" onclick="acceptGift()">
+              ✓ Accept Gift &amp; Claim Tax Relief
+            </button>
+          </div>
+        </div>
+
+        <!-- Already accepted -->
+        <div id="acceptedSuccess" class="card hidden">
+          <div class="card-body text-center">
+            <div style="font-size:3rem;margin-bottom:1rem;">🎉</div>
+            <h3 style="color:var(--red);">Gift Accepted!</h3>
+            <p class="mb-3">Your portion and tax relief have been registered. Check your dashboard below to manage all gifts and share your Giving Aura page.</p>
+            <button class="btn btn-primary btn-full" onclick="showDashboard()">Go to My Dashboard →</button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ─── VIEW: COUPLE SETUP (new couple) ───────────────────── -->
+  <div id="viewSetup" class="hidden">
+    <div class="page-hero">
+      <div class="container">
+        <div class="hero-badge" style="margin:0 auto 1rem;">💍 Set Up Your Wedding Page</div>
+        <h1>Your GiveHeart Dashboard</h1>
+        <p>Create your couple profile to start receiving gifts and sharing your Giving Aura.</p>
+      </div>
+    </div>
+    <main class="section-sm">
+      <div class="container-sm">
+        <div class="card fade-in-up">
+          <div class="card-header">
+            <h3 style="margin:0;color:var(--red);">💑 Create Your Couple Profile</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Your Names <span class="required">*</span></label>
+              <input type="text" id="setupCoupleName" class="form-control" placeholder="e.g. Wei Jie &amp; Lin Hui" />
+              <div class="form-error" id="err-setupCoupleName">Please enter your names.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Wedding Date</label>
+              <input type="date" id="setupWeddingDate" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Your Email <span class="required">*</span></label>
+              <input type="email" id="setupEmail" class="form-control" placeholder="couple@email.com" />
+              <div class="form-error" id="err-setupEmail">Please enter a valid email.</div>
+            </div>
+            <h4 class="mb-2 mt-3">Choose Your Featured Charity</h4>
+            <p class="caption text-muted mb-2">This will be shown on your Giving Aura page shared with guests.</p>
+            <div class="charity-grid" id="setupCharityList"></div>
+            <div class="form-error mt-1" id="err-setupCharity" style="display:none;">Please choose a charity.</div>
+            <button class="btn btn-primary btn-full btn-lg mt-3" onclick="createCoupleProfile()">
+              🌸 Create My Wedding Page
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ─── VIEW: DASHBOARD ───────────────────────────────────── -->
+  <div id="viewDashboard" class="hidden">
+
+    <div class="page-hero">
+      <div class="container">
+        <div class="hero-badge" style="margin:0 auto 0.75rem;">💑 Your Wedding Dashboard</div>
+        <h1 id="dashCoupleName">—</h1>
+        <p id="dashWeddingDate" style="color:rgba(255,255,255,0.75);">—</p>
+      </div>
+    </div>
+
+    <main class="section-sm">
+      <div class="container">
+
+        <!-- Stats Row -->
+        <div class="stat-grid mb-3">
+          <div class="stat-card">
+            <div class="stat-number" id="dashTotalGifts">0</div>
+            <div class="stat-label">Gifts Received</div>
+          </div>
+          <div class="stat-card" style="border-color:var(--gold);">
+            <div class="stat-number text-gold" id="dashTotalPersonal">S$0</div>
+            <div class="stat-label">Your Total Portion</div>
+          </div>
+          <div class="stat-card" style="border-color:var(--red);">
+            <div class="stat-number text-red" id="dashTotalCharity">S$0</div>
+            <div class="stat-label">Total to Charity</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;" class="responsive-2col">
+
+          <!-- Left col: gifts & charity -->
+          <div>
+            <!-- Featured Charity -->
+            <div class="card mb-3">
+              <div class="card-header" style="background:var(--red-light);">
+                <h4 style="margin:0;color:var(--red);">🏛️ Your Featured Charity</h4>
+              </div>
+              <div class="card-body">
+                <div id="dashFeaturedCharity" class="charity-option selected mb-2" style="cursor:default;"></div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="dashProgress" style="width:0%"></div>
+                </div>
+                <div class="d-flex justify-between caption text-muted mt-1">
+                  <span id="dashRaised">S$0 raised</span>
+                  <span id="dashGoal">of —</span>
+                </div>
+                <button class="btn btn-ghost btn-sm mt-2" onclick="changeCharityMode()">Change Charity</button>
+              </div>
+            </div>
+
+            <!-- Gift List -->
+            <div class="card">
+              <div class="card-header">
+                <h4 style="margin:0;color:var(--red);">🧧 Gifts Received</h4>
+              </div>
+              <div class="card-body">
+                <div class="gift-list" id="dashGiftList">
+                  <p class="text-muted caption text-center">No gifts yet. Share your giving aura page to invite guests!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right col: sharing -->
+          <div>
+            <!-- Giving Aura Share -->
+            <div class="card mb-3" style="border-color:var(--red);">
+              <div class="card-body" style="background:linear-gradient(135deg,var(--red-light),var(--gold-light));border-radius:var(--radius);">
+                <div style="font-size:2.5rem;text-align:center;margin-bottom:0.75rem;">✨</div>
+                <h3 style="text-align:center;color:var(--red);margin-bottom:0.5rem;">Your Giving Aura Page</h3>
+                <p class="text-center caption mb-3">Share this beautiful page with all your wedding guests. They can send gifts directly through your page.</p>
+                <div class="share-box mb-2">
+                  <input type="text" id="auraLink" readonly />
+                  <button onclick="copyAuraLink()">📋 Copy</button>
+                </div>
+                <button class="btn btn-primary btn-full" onclick="shareAuraLink()">
+                  📤 Share with Guests
+                </button>
+              </div>
+            </div>
+
+            <!-- Tax Relief Summary -->
+            <div class="card mb-3">
+              <div class="card-header">
+                <h4 style="margin:0;color:var(--gold);">🏛️ Tax Relief Summary</h4>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-between mb-2">
+                  <span class="text-muted" style="font-size:0.9rem;">Total Donated to Charity</span>
+                  <strong id="taxCharity" class="text-red">S$0</strong>
+                </div>
+                <div class="d-flex justify-between mb-2">
+                  <span class="text-muted" style="font-size:0.9rem;">250% Tax Deduction</span>
+                  <strong id="taxDeduction" class="text-gold">S$0</strong>
+                </div>
+                <div style="border-top:1px solid var(--border);padding-top:0.75rem;margin-top:0.5rem;">
+                  <div class="d-flex justify-between">
+                    <span class="fw-bold" style="font-size:0.9rem;">Estimated Tax Savings</span>
+                    <strong id="taxSavings" class="text-red" style="font-size:1.05rem;">S$0</strong>
+                  </div>
+                  <div class="caption text-muted mt-1">* Based on 22% marginal tax rate. Consult a tax professional for exact figures.</div>
+                </div>
+                <div class="badge badge-gold mt-2">NRIC: <span id="dashNRIC">Not provided</span></div>
+              </div>
+            </div>
+
+            <!-- Add Gift Manually -->
+            <div class="card">
+              <div class="card-body text-center">
+                <p class="caption text-muted mb-2">Expecting more guests? Send them your gift link directly.</p>
+                <button class="btn btn-outline btn-sm btn-full" onclick="copyAuraLinkAsGiftInvite()">
+                  🧧 Invite Guests to Send Gifts
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ─── Footer ─────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <p>囍 GiveHeart &nbsp;|&nbsp; <a href="index.html">Home</a> &nbsp;·&nbsp; <a href="donor.html">Send a Gift</a></p>
+  </footer>
+
+  <style>
+    @media (max-width:640px) {
+      .responsive-2col { grid-template-columns: 1fr !important; }
+    }
+  </style>
+
+  <script src="js/app.js"></script>
+  <script>
+    let activeCoupleId = null;
+    let activeGift = null;
+    let setupCharityId = null;
+
+    /* ── Init ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      const giftId   = getParam('gift');
+      const coupleId = getParam('couple');
+      const stored   = localStorage.getItem('giveheart_coupleId');
+
+      if (giftId) {
+        // Incoming gift link
+        const gift = getGift(giftId);
+        if (gift) {
+          activeGift = gift;
+          showGiftClaim(gift);
+        } else {
+          showSetup();
+        }
+      } else if (coupleId) {
+        activeCoupleId = coupleId;
+        const couple = getCouple(coupleId);
+        if (couple) showDashboard(couple);
+        else showSetup();
+      } else if (stored) {
+        activeCoupleId = stored;
+        const couple = getCouple(stored);
+        if (couple) showDashboard(couple);
+        else showSetup();
+      } else {
+        showSetup();
+      }
+
+      // Setup charity list
+      renderCharityOptions('setupCharityList', null, id => { setupCharityId = id; });
+    });
+
+    /* ── Show Views ── */
+    function showGiftClaim(gift) {
+      ['viewGiftClaim','viewSetup','viewDashboard'].forEach(v =>
+        document.getElementById(v).classList.add('hidden'));
+      document.getElementById('viewGiftClaim').classList.remove('hidden');
+      populateGiftClaim(gift);
+    }
+
+    function showSetup() {
+      ['viewGiftClaim','viewSetup','viewDashboard'].forEach(v =>
+        document.getElementById(v).classList.add('hidden'));
+      document.getElementById('viewSetup').classList.remove('hidden');
+    }
+
+    function showDashboard(couple) {
+      ['viewGiftClaim','viewSetup','viewDashboard'].forEach(v =>
+        document.getElementById(v).classList.add('hidden'));
+      document.getElementById('viewDashboard').classList.remove('hidden');
+      populateDashboard(couple);
+    }
+
+    /* ── Gift Claim Population ── */
+    function populateGiftClaim(gift) {
+      document.getElementById('heroCoupleName').textContent =
+        `Congratulations, ${gift.coupleName}! 🎉`;
+      document.getElementById('heroFromDonor').textContent =
+        `A gift from ${gift.donorName}`;
+      document.getElementById('claimGiftId').textContent =
+        `#${gift.id.slice(0,8).toUpperCase()}`;
+      document.getElementById('claimTotal').textContent    = fmt(gift.totalAmount);
+      document.getElementById('claimPersonal').textContent = fmt(gift.personalAmount);
+      document.getElementById('claimCharity').textContent  = fmt(gift.charityAmount);
+      document.getElementById('claimCharityIcon').textContent = gift.charityIcon;
+      document.getElementById('claimCharityName').textContent = gift.charityName;
+
+      if (gift.status === 'claimed') {
+        document.getElementById('acceptedSuccess').classList.remove('hidden');
+      }
+    }
+
+    /* ── Accept Gift ── */
+    function acceptGift() {
+      const nric  = document.getElementById('coupleNRIC').value.trim().toUpperCase();
+      const email = document.getElementById('coupleEmail').value.trim();
+      let ok = true;
+
+      if (!validateNRIC(nric)) {
+        document.getElementById('err-nric').style.display = 'block'; ok = false;
+      } else {
+        document.getElementById('err-nric').style.display = 'none';
+      }
+      if (!email || !email.includes('@')) {
+        document.getElementById('err-coupleEmail').style.display = 'block'; ok = false;
+      } else {
+        document.getElementById('err-coupleEmail').style.display = 'none';
+      }
+      if (!ok) return;
+
+      // Mark gift as claimed
+      activeGift.status = 'claimed';
+      activeGift.coupleNRIC  = maskNRIC(nric);
+      activeGift.coupleEmail = email;
+      saveGift(activeGift);
+
+      // Create or update couple profile
+      const storedCoupleId = localStorage.getItem('giveheart_coupleId');
+      let couple = storedCoupleId ? getCouple(storedCoupleId) : null;
+
+      if (!couple) {
+        couple = {
+          id:           uuid(),
+          coupleName:   activeGift.coupleName,
+          nricMasked:   maskNRIC(nric),
+          email:        email,
+          featuredCharityId: activeGift.charityId,
+          featuredCharityName: activeGift.charityName,
+          featuredCharityIcon: activeGift.charityIcon,
+          giftIds:      [activeGift.id],
+          createdAt:    Date.now(),
+        };
+      } else {
+        if (!couple.giftIds.includes(activeGift.id)) {
+          couple.giftIds.push(activeGift.id);
+        }
+        couple.nricMasked = maskNRIC(nric);
+      }
+      saveCouple(couple);
+      localStorage.setItem('giveheart_coupleId', couple.id);
+      activeCoupleId = couple.id;
+
+      document.getElementById('acceptedSuccess').classList.remove('hidden');
+      showToast('🎉 Gift accepted! Charity donation registered in your name.');
+    }
+
+    /* ── Go to dashboard after accepting ── */
+    window.showDashboard = function() {
+      const couple = getCouple(activeCoupleId);
+      if (couple) showDashboard(couple);
+    };
+
+    /* ── Create Couple Profile (Setup) ── */
+    function createCoupleProfile() {
+      const name  = document.getElementById('setupCoupleName').value.trim();
+      const email = document.getElementById('setupEmail').value.trim();
+      let ok = true;
+      if (!name)  { document.getElementById('err-setupCoupleName').style.display='block'; ok=false; }
+      else          document.getElementById('err-setupCoupleName').style.display='none';
+      if (!email || !email.includes('@')) {
+        document.getElementById('err-setupEmail').style.display='block'; ok=false;
+      } else      document.getElementById('err-setupEmail').style.display='none';
+      if (!setupCharityId) {
+        document.getElementById('err-setupCharity').style.display='block'; ok=false;
+      } else      document.getElementById('err-setupCharity').style.display='none';
+      if (!ok) return;
+
+      const charity = getCharity(setupCharityId);
+      const couple = {
+        id:           uuid(),
+        coupleName:   name,
+        weddingDate:  document.getElementById('setupWeddingDate').value,
+        email:        email,
+        featuredCharityId:   setupCharityId,
+        featuredCharityName: charity.name,
+        featuredCharityIcon: charity.icon,
+        giftIds:      [],
+        createdAt:    Date.now(),
+      };
+      saveCouple(couple);
+      localStorage.setItem('giveheart_coupleId', couple.id);
+      activeCoupleId = couple.id;
+      showDashboard(couple);
+    }
+
+    /* ── Dashboard Population ── */
+    function populateDashboard(couple) {
+      document.getElementById('dashCoupleName').textContent = couple.coupleName;
+      document.getElementById('dashWeddingDate').textContent =
+        couple.weddingDate ? `Wedding: ${new Date(couple.weddingDate).toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}` : '💍 Setting the date';
+
+      // Aura link
+      const aura = createAuraLink(couple.id);
+      document.getElementById('auraLink').value = aura;
+
+      // Featured charity
+      const fc = document.getElementById('dashFeaturedCharity');
+      fc.innerHTML = `
+        <div class="charity-icon">${couple.featuredCharityIcon || '🤝'}</div>
+        <div>
+          <div class="charity-name">${couple.featuredCharityName || '—'}</div>
+          <div class="charity-desc">IPC Certified · 250% Tax Deductible</div>
+        </div>
+        <span class="badge badge-gold">Featured</span>
+      `;
+
+      // Gifts
+      const gifts = (couple.giftIds || []).map(id => getGift(id)).filter(Boolean);
+      const totalPersonal = gifts.reduce((s, g) => s + g.personalAmount, 0);
+      const totalCharity  = gifts.reduce((s, g) => s + g.charityAmount, 0);
+      const totalGifts    = gifts.length;
+
+      document.getElementById('dashTotalGifts').textContent   = totalGifts;
+      document.getElementById('dashTotalPersonal').textContent = fmt(totalPersonal);
+      document.getElementById('dashTotalCharity').textContent  = fmt(totalCharity);
+
+      // Progress (goal = first gift's charity * 10 as demo goal)
+      const goal = Math.max(totalCharity * 2, 1000);
+      const pct  = Math.min((totalCharity / goal) * 100, 100);
+      document.getElementById('dashProgress').style.width = pct + '%';
+      document.getElementById('dashRaised').textContent = `${fmt(totalCharity)} raised`;
+      document.getElementById('dashGoal').textContent   = `of ${fmt(goal)} goal`;
+
+      // Tax
+      const deduction = totalCharity * 2.5;
+      const savings   = deduction * 0.22;
+      document.getElementById('taxCharity').textContent   = fmt(totalCharity);
+      document.getElementById('taxDeduction').textContent = fmt(deduction);
+      document.getElementById('taxSavings').textContent   = fmt(savings);
+      document.getElementById('dashNRIC').textContent     = couple.nricMasked || 'Not provided';
+
+      // Gift list
+      const listEl = document.getElementById('dashGiftList');
+      if (gifts.length === 0) {
+        listEl.innerHTML = '<p class="text-muted caption text-center">No gifts yet. Share your Giving Aura page!</p>';
+      } else {
+        listEl.innerHTML = gifts.map(g => `
+          <div class="gift-item">
+            <div class="gift-avatar">${g.donorName[0].toUpperCase()}</div>
+            <div class="gift-info">
+              <div class="gift-name">${g.donorName}</div>
+              <div class="gift-meta">${g.charityIcon} ${g.charityName} &nbsp;·&nbsp; ${formatDate(g.createdAt)}</div>
+            </div>
+            <div class="gift-amounts">
+              <div class="gift-total">${fmt(g.totalAmount)}</div>
+              <div class="gift-charity-amt">❤️ ${fmt(g.charityAmount)} to charity</div>
+            </div>
+            <span class="badge badge-${g.status==='claimed'?'green':'gray'}" style="margin-left:0.5rem;">${g.status}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    /* ── Share helpers ── */
+    function copyAuraLink() {
+      copyText(document.getElementById('auraLink').value, '✓ Giving Aura link copied!');
+    }
+    function shareAuraLink() {
+      const couple = getCouple(activeCoupleId);
+      const link   = document.getElementById('auraLink').value;
+      shareOrCopy(link,
+        `${couple?.coupleName || 'Our'} Wedding & Giving Aura`,
+        `Join us in celebrating our big day — and help us give back. 💖`
+      );
+    }
+    function copyAuraLinkAsGiftInvite() {
+      const couple = getCouple(activeCoupleId);
+      const link   = buildUrl('donor.html', { couple: encodeURIComponent(couple?.coupleName || '') });
+      shareOrCopy(link, 'Send a Gift', 'Be part of our meaningful celebration!');
+    }
+
+    function changeCharityMode() {
+      showToast('Charity selection coming soon!');
+    }
+
+    /* ── Override selectCharity for setup ── */
+    window.selectCharity = function(id, containerId) {
+      document.querySelectorAll(`#${containerId} .charity-option`).forEach(el => {
+        const sel = el.dataset.charity === id;
+        el.classList.toggle('selected', sel);
+        el.querySelector('.charity-check').textContent = sel ? '✓' : '';
+      });
+      setupCharityId = id;
+      document.getElementById('err-setupCharity').style.display = 'none';
+    };
+  </script>
+</body>
+</html>

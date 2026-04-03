@@ -1,0 +1,260 @@
+/* ═══════════════════════════════════════════════════════════
+   GiveHeart — Shared Application Logic
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── IPC Charities ────────────────────────────────────────── */
+const IPC_CHARITIES = [
+  { id: "community-chest",    name: "Community Chest",                     icon: "🤝", desc: "Supporting social service agencies across Singapore" },
+  { id: "singapore-red-cross",name: "Singapore Red Cross",                 icon: "🏥", desc: "Humanitarian aid & emergency relief" },
+  { id: "childrens-cancer",   name: "Children's Cancer Foundation",        icon: "🎗️", desc: "Supporting children & families battling cancer" },
+  { id: "spca",               name: "SPCA Singapore",                      icon: "🐾", desc: "Prevention of cruelty to animals" },
+  { id: "minds",              name: "MINDS",                               icon: "💙", desc: "Caring for the intellectually disabled" },
+  { id: "nkf",                name: "National Kidney Foundation",          icon: "🫀", desc: "Kidney care & dialysis services" },
+  { id: "sg-childrens-society",name:"Singapore Children's Society",        icon: "👶", desc: "Child protection & family services" },
+  { id: "aware",              name: "AWARE Singapore",                     icon: "♀️", desc: "Gender equality & support services" },
+  { id: "alzheimers",         name: "Alzheimer's Disease Association",     icon: "🧠", desc: "Dementia care & caregiver support" },
+  { id: "make-a-wish",        name: "Make-A-Wish Foundation Singapore",    icon: "⭐", desc: "Granting wishes to critically ill children" },
+];
+
+function getCharity(id) {
+  return IPC_CHARITIES.find(c => c.id === id) || null;
+}
+
+/* ─── Storage Helpers ──────────────────────────────────────── */
+const STORE_KEY = 'giveheart_data';
+
+function loadStore() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || { gifts: {}, couples: {} }; }
+  catch { return { gifts: {}, couples: {} }; }
+}
+
+function saveStore(data) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(data));
+}
+
+function saveGift(gift) {
+  const store = loadStore();
+  store.gifts[gift.id] = gift;
+  saveStore(store);
+}
+
+function getGift(id) {
+  return loadStore().gifts[id] || null;
+}
+
+function saveCouple(couple) {
+  const store = loadStore();
+  store.couples[couple.id] = couple;
+  saveStore(store);
+}
+
+function getCouple(id) {
+  return loadStore().couples[id] || null;
+}
+
+/* ─── UUID ─────────────────────────────────────────────────── */
+function uuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
+/* ─── Currency ─────────────────────────────────────────────── */
+function fmt(amount) {
+  return `S$${parseFloat(amount).toFixed(2)}`;
+}
+
+function fmtShort(amount) {
+  const n = parseFloat(amount);
+  return `S$${Number.isInteger(n) ? n : n.toFixed(2)}`;
+}
+
+/* ─── URL Helpers ──────────────────────────────────────────── */
+function getParam(key) {
+  return new URLSearchParams(window.location.search).get(key);
+}
+
+function buildUrl(page, params) {
+  const base = window.location.origin + window.location.pathname.replace(/\/[^/]+$/, '/');
+  const qs = new URLSearchParams(params).toString();
+  return `${base}${page}?${qs}`;
+}
+
+/* ─── PayNow QR ────────────────────────────────────────────── */
+/*
+  Generates an EMVCo-compatible PayNow QR string.
+  In production, replace PAYNOW_UEN with your platform's UEN.
+  Reference encodes gift ID so payment can be matched.
+*/
+const PAYNOW_UEN  = "T99SS9999A";      // ← replace with real UEN
+const PAYNOW_NAME = "GiveHeart Pte Ltd";
+
+function crc16(str) {
+  let crc = 0xFFFF;
+  for (let i = 0; i < str.length; i++) {
+    crc ^= str.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : crc << 1;
+    }
+  }
+  return crc & 0xFFFF;
+}
+
+function tlv(tag, value) {
+  return `${tag}${String(value.length).padStart(2, '0')}${value}`;
+}
+
+function buildPayNowQR({ amount, reference, expiryDate }) {
+  const merchantInfo =
+    tlv('00', 'SG.PAYNOW') +
+    tlv('01', '2') +           // proxy type: UEN
+    tlv('02', PAYNOW_UEN) +
+    tlv('03', '0') +           // amount not editable
+    (expiryDate ? tlv('04', expiryDate) : '');
+
+  const addlData = tlv('01', reference.substring(0, 25));
+
+  let payload =
+    tlv('00', '01') +
+    tlv('01', '12') +
+    tlv('26', merchantInfo) +
+    tlv('52', '0000') +
+    tlv('53', '702') +
+    tlv('54', parseFloat(amount).toFixed(2)) +
+    tlv('58', 'SG') +
+    tlv('59', PAYNOW_NAME.substring(0, 25)) +
+    tlv('60', 'Singapore') +
+    tlv('62', addlData) +
+    '6304';
+
+  const checksum = crc16(payload).toString(16).toUpperCase().padStart(4, '0');
+  return payload + checksum;
+}
+
+function renderQR(containerId, content, size = 200) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  new QRCode(el, {
+    text: content,
+    width: size,
+    height: size,
+    colorDark: '#2D1010',
+    colorLight: '#FFFFFF',
+    correctLevel: QRCode.CorrectLevel.M,
+  });
+}
+
+/* ─── Gift Link ────────────────────────────────────────────── */
+function createGiftLink(gift) {
+  return buildUrl('couple.html', { gift: gift.id });
+}
+
+function createAuraLink(coupleId) {
+  return buildUrl('giving-aura.html', { couple: coupleId });
+}
+
+/* ─── NRIC Validation (Singapore) ─────────────────────────── */
+function validateNRIC(nric) {
+  const clean = nric.toUpperCase().trim();
+  if (!/^[STFGM]\d{7}[A-Z]$/.test(clean)) return false;
+  const weights = [2, 7, 6, 5, 4, 3, 2];
+  const prefix = clean[0];
+  const digits = clean.slice(1, 8).split('').map(Number);
+  let sum = digits.reduce((acc, d, i) => acc + d * weights[i], 0);
+  if (['T', 'G'].includes(prefix)) sum += 4;
+  if (['M'].includes(prefix)) sum += 3;
+  const remainder = sum % 11;
+  const ST_table = ['J','Z','I','H','G','F','E','D','C','B','A'];
+  const FG_table = ['X','W','U','T','R','Q','P','N','M','L','K'];
+  const M_table  = ['X','W','U','T','R','Q','P','N','J','L','K'];
+  let expected;
+  if (['S','T'].includes(prefix)) expected = ST_table[remainder];
+  else if (['F','G'].includes(prefix)) expected = FG_table[remainder];
+  else expected = M_table[remainder];
+  return clean[8] === expected;
+}
+
+function maskNRIC(nric) {
+  if (nric.length < 4) return nric;
+  return nric[0] + '*'.repeat(nric.length - 4) + nric.slice(-4);
+}
+
+/* ─── Toast ────────────────────────────────────────────────── */
+function showToast(msg, duration = 2500) {
+  let t = document.querySelector('.toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.className = 'toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), duration);
+}
+
+/* ─── Copy to Clipboard ────────────────────────────────────── */
+function copyText(text, successMsg = '✓ Copied!') {
+  navigator.clipboard.writeText(text).then(() => showToast(successMsg));
+}
+
+/* ─── Share (Web Share API / fallback) ─────────────────────── */
+function shareOrCopy(url, title = 'GiveHeart Gift', text = 'A meaningful gift for you') {
+  if (navigator.share) {
+    navigator.share({ title, text, url }).catch(() => copyText(url));
+  } else {
+    copyText(url, '✓ Link copied! Share it via WhatsApp or SMS.');
+  }
+}
+
+/* ─── Render Charity Options ───────────────────────────────── */
+function renderCharityOptions(containerId, selectedId, onSelect) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = IPC_CHARITIES.map(c => `
+    <button type="button" class="charity-option ${c.id === selectedId ? 'selected' : ''}"
+            data-charity="${c.id}" onclick="selectCharity('${c.id}', '${containerId}', handleCharitySelect)">
+      <div class="charity-icon">${c.icon}</div>
+      <div>
+        <div class="charity-name">${c.name}</div>
+        <div class="charity-desc">${c.desc}</div>
+      </div>
+      <div class="charity-check">${c.id === selectedId ? '✓' : ''}</div>
+    </button>
+  `).join('');
+}
+
+function selectCharity(id, containerId, callback) {
+  document.querySelectorAll(`#${containerId} .charity-option`).forEach(el => {
+    const selected = el.dataset.charity === id;
+    el.classList.toggle('selected', selected);
+    el.querySelector('.charity-check').textContent = selected ? '✓' : '';
+  });
+  if (callback) callback(id);
+}
+
+/* ─── Date Helpers ─────────────────────────────────────────── */
+function todayPlus(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0].replace(/-/g, '');
+}
+
+function formatDate(ts) {
+  return new Date(ts).toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+/* ─── Number Formatter ─────────────────────────────────────── */
+function animateNumber(el, target, prefix = 'S$', duration = 1000) {
+  const start = 0;
+  const startTime = performance.now();
+  const step = (now) => {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = prefix + (start + (target - start) * ease).toFixed(2);
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
