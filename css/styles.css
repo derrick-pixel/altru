@@ -636,6 +636,80 @@ input[type=range]::-webkit-slider-thumb {
   gap: 0.6rem;
 }
 
+/* ─── Charity Info Button & Popup ────────────────────────── */
+.charity-option-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+.charity-info-btn {
+  background: var(--red-light);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  font-size: 0.8rem;
+  color: var(--red);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 0.25rem;
+  transition: all var(--transition);
+  font-style: normal;
+}
+.charity-info-btn:hover {
+  background: var(--red);
+  color: white;
+  border-color: var(--red);
+}
+.charity-popup {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--red);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  margin-top: -2px;
+  box-shadow: 0 6px 20px var(--shadow);
+  animation: fadeInUp 0.2s ease both;
+}
+.charity-popup-body {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.charity-popup-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.charity-popup-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+.charity-popup-ipc {
+  font-family: monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--red);
+  background: var(--red-light);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+.charity-popup-link {
+  color: var(--red);
+  font-weight: 600;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+.charity-popup-link:hover { text-decoration: underline; }
+
 /* ─── Alert ──────────────────────────────────────────────── */
 .alert {
   padding: 1rem 1.25rem;

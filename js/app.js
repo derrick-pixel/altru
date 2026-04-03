@@ -4,16 +4,76 @@
 
 /* ─── IPC Charities ────────────────────────────────────────── */
 const IPC_CHARITIES = [
-  { id: "community-chest",    name: "Community Chest",                     icon: "🤝", desc: "Supporting social service agencies across Singapore" },
-  { id: "singapore-red-cross",name: "Singapore Red Cross",                 icon: "🏥", desc: "Humanitarian aid & emergency relief" },
-  { id: "childrens-cancer",   name: "Children's Cancer Foundation",        icon: "🎗️", desc: "Supporting children & families battling cancer" },
-  { id: "spca",               name: "SPCA Singapore",                      icon: "🐾", desc: "Prevention of cruelty to animals" },
-  { id: "minds",              name: "MINDS",                               icon: "💙", desc: "Caring for the intellectually disabled" },
-  { id: "nkf",                name: "National Kidney Foundation",          icon: "🫀", desc: "Kidney care & dialysis services" },
-  { id: "sg-childrens-society",name:"Singapore Children's Society",        icon: "👶", desc: "Child protection & family services" },
-  { id: "aware",              name: "AWARE Singapore",                     icon: "♀️", desc: "Gender equality & support services" },
-  { id: "alzheimers",         name: "Alzheimer's Disease Association",     icon: "🧠", desc: "Dementia care & caregiver support" },
-  { id: "make-a-wish",        name: "Make-A-Wish Foundation Singapore",    icon: "⭐", desc: "Granting wishes to critically ill children" },
+  {
+    id: "community-chest", name: "Community Chest", icon: "🤝",
+    desc: "Supporting social service agencies across Singapore",
+    beneficiary: "Over 80 social service agencies helping vulnerable families, seniors, persons with disabilities, and children in need across Singapore.",
+    ipcNo: "IPC000072",
+    website: "https://www.giving.sg/community-chest",
+  },
+  {
+    id: "singapore-red-cross", name: "Singapore Red Cross", icon: "🏥",
+    desc: "Humanitarian aid & emergency relief",
+    beneficiary: "Disaster survivors, blood donation recipients, the elderly, and vulnerable communities both locally and internationally.",
+    ipcNo: "IPC000080",
+    website: "https://www.redcross.sg",
+  },
+  {
+    id: "childrens-cancer", name: "Children's Cancer Foundation", icon: "🎗️",
+    desc: "Supporting children & families battling cancer",
+    beneficiary: "Children aged 0–19 diagnosed with cancer, and their families — providing financial aid, counselling, and home nursing support.",
+    ipcNo: "IPC000438",
+    website: "https://www.ccf.org.sg",
+  },
+  {
+    id: "spca", name: "SPCA Singapore", icon: "🐾",
+    desc: "Prevention of cruelty to animals",
+    beneficiary: "Stray, abandoned, and mistreated animals in Singapore — providing rescue, shelter, veterinary care, and rehoming services.",
+    ipcNo: "IPC000351",
+    website: "https://www.spca.org.sg",
+  },
+  {
+    id: "minds", name: "MINDS", icon: "💙",
+    desc: "Caring for the intellectually disabled",
+    beneficiary: "Persons with intellectual disabilities and their caregivers — offering education, training, employment support, and residential care.",
+    ipcNo: "IPC000367",
+    website: "https://www.minds.org.sg",
+  },
+  {
+    id: "nkf", name: "National Kidney Foundation", icon: "🫀",
+    desc: "Kidney care & dialysis services",
+    beneficiary: "Over 6,000 kidney failure patients receiving subsidised dialysis treatment across NKF centres, regardless of ability to pay.",
+    ipcNo: "IPC000108",
+    website: "https://www.nkfs.org",
+  },
+  {
+    id: "sg-childrens-society", name: "Singapore Children's Society", icon: "👶",
+    desc: "Child protection & family services",
+    beneficiary: "At-risk children and youth aged 0–18, including abuse victims, children from low-income families, and those with special needs.",
+    ipcNo: "IPC000387",
+    website: "https://www.childrensociety.org.sg",
+  },
+  {
+    id: "aware", name: "AWARE Singapore", icon: "♀️",
+    desc: "Gender equality & support services",
+    beneficiary: "Women facing workplace discrimination, sexual violence survivors, and individuals seeking gender equality support and legal guidance.",
+    ipcNo: "IPC000653",
+    website: "https://www.aware.org.sg",
+  },
+  {
+    id: "alzheimers", name: "Alzheimer's Disease Association", icon: "🧠",
+    desc: "Dementia care & caregiver support",
+    beneficiary: "Persons living with dementia and their caregivers — providing day care, home care, counselling, and caregiver training.",
+    ipcNo: "IPC000440",
+    website: "https://www.alz.org.sg",
+  },
+  {
+    id: "make-a-wish", name: "Make-A-Wish Foundation Singapore", icon: "⭐",
+    desc: "Granting wishes to critically ill children",
+    beneficiary: "Children aged 3–18 with life-threatening medical conditions — granting heartfelt wishes to bring joy and hope to their lives.",
+    ipcNo: "IPC000867",
+    website: "https://www.makeawish.org.sg",
+  },
 ];
 
 function getCharity(id) {
@@ -214,16 +274,45 @@ function renderCharityOptions(containerId, selectedId, onSelect) {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = IPC_CHARITIES.map(c => `
-    <button type="button" class="charity-option ${c.id === selectedId ? 'selected' : ''}"
-            data-charity="${c.id}" onclick="selectCharity('${c.id}', '${containerId}', handleCharitySelect)">
-      <div class="charity-icon">${c.icon}</div>
-      <div>
-        <div class="charity-name">${c.name}</div>
-        <div class="charity-desc">${c.desc}</div>
+    <div class="charity-option-wrapper">
+      <button type="button" class="charity-option ${c.id === selectedId ? 'selected' : ''}"
+              data-charity="${c.id}" onclick="selectCharity('${c.id}', '${containerId}')">
+        <div class="charity-icon">${c.icon}</div>
+        <div style="flex:1;">
+          <div class="charity-name">${c.name}</div>
+          <div class="charity-desc">${c.desc}</div>
+        </div>
+        <button type="button" class="charity-info-btn" onclick="event.stopPropagation();toggleCharityPopup('popup-${c.id}')" title="More info">ℹ</button>
+        <div class="charity-check">${c.id === selectedId ? '✓' : ''}</div>
+      </button>
+      <div class="charity-popup hidden" id="popup-${c.id}">
+        <div class="charity-popup-body">
+          <div class="charity-popup-row">
+            <span class="charity-popup-label">Beneficiary</span>
+            <span>${c.beneficiary}</span>
+          </div>
+          <div class="charity-popup-row">
+            <span class="charity-popup-label">IPC Number</span>
+            <span class="charity-popup-ipc">${c.ipcNo}</span>
+          </div>
+          <div class="charity-popup-row">
+            <span class="charity-popup-label">Website</span>
+            <a href="${c.website}" target="_blank" rel="noopener" class="charity-popup-link" onclick="event.stopPropagation()">${c.website.replace('https://', '')}</a>
+          </div>
+        </div>
       </div>
-      <div class="charity-check">${c.id === selectedId ? '✓' : ''}</div>
-    </button>
+    </div>
   `).join('');
+}
+
+function toggleCharityPopup(popupId) {
+  const popup = document.getElementById(popupId);
+  if (!popup) return;
+  // Close all other popups first
+  document.querySelectorAll('.charity-popup').forEach(p => {
+    if (p.id !== popupId) p.classList.add('hidden');
+  });
+  popup.classList.toggle('hidden');
 }
 
 function selectCharity(id, containerId, callback) {
