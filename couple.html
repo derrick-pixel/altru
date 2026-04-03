@@ -25,6 +25,37 @@
     </div>
   </header>
 
+  <!-- ─── VIEW: LOGIN ──────────────────────────────────────── -->
+  <div id="viewLogin" class="hidden">
+    <div class="page-hero">
+      <div class="container">
+        <div class="hero-badge" style="margin:0 auto 1rem;">🔒 Couple Access</div>
+        <h1>Welcome Back</h1>
+        <p>Enter your password to access your wedding dashboard.</p>
+      </div>
+    </div>
+    <main class="section-sm">
+      <div class="container-sm">
+        <div class="card fade-in-up" style="max-width:400px;margin:0 auto;">
+          <div class="card-body">
+            <div style="text-align:center;font-size:3rem;margin-bottom:1rem;">囍</div>
+            <h3 style="text-align:center;color:var(--red);margin-bottom:1.5rem;">Couple Dashboard Login</h3>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" id="loginPassword" class="form-control"
+                     placeholder="Enter password"
+                     onkeydown="if(event.key==='Enter') submitLogin()" />
+              <div class="form-error" id="err-login" style="display:none;">Incorrect password. Please try again.</div>
+            </div>
+            <button class="btn btn-primary btn-full btn-lg" onclick="submitLogin()">
+              Login →
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
   <!-- ─── VIEW: INCOMING GIFT CLAIM ────────────────────────── -->
   <div id="viewGiftClaim" class="hidden">
     <div class="page-hero">
@@ -310,6 +341,37 @@
     let activeGift = null;
     let setupCharityId = null;
 
+    const COUPLE_PASSWORD = '123';
+
+    function isLoggedIn() {
+      return sessionStorage.getItem('giveheart_auth') === 'true';
+    }
+
+    function submitLogin() {
+      const pwd = document.getElementById('loginPassword').value;
+      if (pwd === COUPLE_PASSWORD) {
+        sessionStorage.setItem('giveheart_auth', 'true');
+        document.getElementById('err-login').style.display = 'none';
+        proceedAfterLogin();
+      } else {
+        document.getElementById('err-login').style.display = 'block';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('loginPassword').focus();
+      }
+    }
+
+    function proceedAfterLogin() {
+      const stored = localStorage.getItem('giveheart_coupleId');
+      if (stored) {
+        activeCoupleId = stored;
+        const couple = getCouple(stored);
+        if (couple) showDashboard(couple);
+        else showSetup();
+      } else {
+        showSetup();
+      }
+    }
+
     /* ── Init ── */
     document.addEventListener('DOMContentLoaded', () => {
       const giftId   = getParam('gift');
@@ -317,7 +379,7 @@
       const stored   = localStorage.getItem('giveheart_coupleId');
 
       if (giftId) {
-        // Incoming gift link
+        // Incoming gift link — no login required (public link shared by donor)
         const gift = getGift(giftId);
         if (gift) {
           activeGift = gift;
@@ -328,15 +390,23 @@
       } else if (coupleId) {
         activeCoupleId = coupleId;
         const couple = getCouple(coupleId);
-        if (couple) showDashboard(couple);
-        else showSetup();
+        if (couple) {
+          if (isLoggedIn()) showDashboard(couple);
+          else showLogin();
+        } else showSetup();
       } else if (stored) {
         activeCoupleId = stored;
         const couple = getCouple(stored);
-        if (couple) showDashboard(couple);
-        else showSetup();
+        if (couple) {
+          if (isLoggedIn()) showDashboard(couple);
+          else showLogin();
+        } else {
+          if (isLoggedIn()) showSetup();
+          else showLogin();
+        }
       } else {
-        showSetup();
+        if (isLoggedIn()) showSetup();
+        else showLogin();
       }
 
       // Setup charity list
@@ -344,21 +414,28 @@
     });
 
     /* ── Show Views ── */
+    function showLogin() {
+      ['viewLogin','viewGiftClaim','viewSetup','viewDashboard'].forEach(v =>
+        document.getElementById(v).classList.add('hidden'));
+      document.getElementById('viewLogin').classList.remove('hidden');
+      setTimeout(() => document.getElementById('loginPassword').focus(), 100);
+    }
+
     function showGiftClaim(gift) {
-      ['viewGiftClaim','viewSetup','viewDashboard'].forEach(v =>
+      ['viewLogin','viewGiftClaim','viewSetup','viewDashboard'].forEach(v =>
         document.getElementById(v).classList.add('hidden'));
       document.getElementById('viewGiftClaim').classList.remove('hidden');
       populateGiftClaim(gift);
     }
 
     function showSetup() {
-      ['viewGiftClaim','viewSetup','viewDashboard'].forEach(v =>
+      ['viewLogin','viewGiftClaim','viewSetup','viewDashboard'].forEach(v =>
         document.getElementById(v).classList.add('hidden'));
       document.getElementById('viewSetup').classList.remove('hidden');
     }
 
     function showDashboard(couple) {
-      ['viewGiftClaim','viewSetup','viewDashboard'].forEach(v =>
+      ['viewLogin','viewGiftClaim','viewSetup','viewDashboard'].forEach(v =>
         document.getElementById(v).classList.add('hidden'));
       document.getElementById('viewDashboard').classList.remove('hidden');
       populateDashboard(couple);
