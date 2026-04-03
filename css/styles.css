@@ -838,6 +838,158 @@ input[type=range]::-webkit-slider-thumb {
 /* ─── NRIC Input ─────────────────────────────────────────── */
 .nric-field { font-family: monospace; letter-spacing: 0.1em; text-transform: uppercase; }
 
+/* ─── Blessing Certificate ──────────────────────────────── */
+.cert-wrapper {
+  background: linear-gradient(135deg, #fff9f0, #fff4f6);
+  border: 3px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(201,151,58,0.25), inset 0 0 60px rgba(201,151,58,0.05);
+}
+.cert-wrapper::before {
+  content: '囍';
+  position: absolute;
+  font-size: 16rem;
+  opacity: 0.03;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  pointer-events: none;
+}
+.cert-corner {
+  position: absolute;
+  font-size: 1.5rem;
+  opacity: 0.4;
+}
+.cert-corner.tl { top: 0.6rem; left: 0.8rem; }
+.cert-corner.tr { top: 0.6rem; right: 0.8rem; }
+.cert-corner.bl { bottom: 0.6rem; left: 0.8rem; }
+.cert-corner.br { bottom: 0.6rem; right: 0.8rem; }
+.cert-border-line {
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  padding: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+.cert-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+.cert-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  color: var(--red-dark);
+  margin: 0.5rem 0;
+  line-height: 1.2;
+}
+.cert-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.cert-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  color: var(--gold);
+  font-size: 1rem;
+}
+.cert-divider::before, .cert-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.cert-from {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.25rem;
+}
+.cert-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+.cert-to {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0.75rem 0 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.cert-couple {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  color: var(--red);
+}
+.cert-charity-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 1rem 0 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--red-light);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.cert-amount {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin: 0.25rem 0;
+}
+.cert-amount-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.cert-ref {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: monospace;
+  margin-top: 1rem;
+}
+.cert-seal {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red-mid), var(--red-dark));
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 16px rgba(200,16,46,0.4);
+  margin: 1rem auto 0;
+  line-height: 1.3;
+  padding: 0.5rem;
+}
+.cert-seal-icon { font-size: 1.4rem; line-height: 1; margin-bottom: 0.15rem; }
+
 /* ─── Footer ─────────────────────────────────────────────── */
 .site-footer {
   background: var(--text);

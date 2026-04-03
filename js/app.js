@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   GiveHeart — Shared Application Logic
+   Altru — Shared Application Logic
    ═══════════════════════════════════════════════════════════ */
 
 /* ─── IPC Charities ────────────────────────────────────────── */
@@ -81,7 +81,7 @@ function getCharity(id) {
 }
 
 /* ─── Storage Helpers ──────────────────────────────────────── */
-const STORE_KEY = 'giveheart_data';
+const STORE_KEY = 'altru_data';
 
 function loadStore() {
   try { return JSON.parse(localStorage.getItem(STORE_KEY)) || { gifts: {}, couples: {} }; }
@@ -148,7 +148,7 @@ function buildUrl(page, params) {
   Reference encodes gift ID so payment can be matched.
 */
 const PAYNOW_MOBILE = "98479776";
-const PAYNOW_NAME   = "GiveHeart";
+const PAYNOW_NAME   = "Altru";
 
 function crc16(str) {
   let crc = 0xFFFF;
@@ -261,7 +261,7 @@ function copyText(text, successMsg = '✓ Copied!') {
 }
 
 /* ─── Share (Web Share API / fallback) ─────────────────────── */
-function shareOrCopy(url, title = 'GiveHeart Gift', text = 'A meaningful gift for you') {
+function shareOrCopy(url, title = 'Altru Gift', text = 'A meaningful gift for you') {
   if (navigator.share) {
     navigator.share({ title, text, url }).catch(() => copyText(url));
   } else {

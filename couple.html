@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wedding Dashboard — GiveHeart</title>
+  <title>Wedding Dashboard — Altru</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
@@ -16,7 +16,7 @@
     <div class="container">
       <a href="index.html" class="logo">
         <span class="logo-mark">囍</span>
-        GiveHeart
+        Altru
       </a>
       <nav class="nav-links">
         <a href="donor.html">Send a Gift</a>
@@ -60,7 +60,7 @@
   <div id="viewGiftClaim" class="hidden">
     <div class="page-hero">
       <div class="container">
-        <div class="hero-badge" style="margin:0 auto 1rem;">🧧 You have received a GiveHeart gift!</div>
+        <div class="hero-badge" style="margin:0 auto 1rem;">🧧 You have received an Altru gift!</div>
         <h1 id="heroCoupleName">Congratulations!</h1>
         <p id="heroFromDonor" style="color:rgba(255,255,255,0.8);">A gift is waiting for you</p>
       </div>
@@ -134,7 +134,7 @@
             </div>
 
             <div class="alert alert-warning">
-              🔒 Your NRIC is encrypted and used only for IRAS tax relief filing. GiveHeart does not share this with third parties.
+              🔒 Your NRIC is encrypted and used only for IRAS tax relief filing. Altru does not share this with third parties.
             </div>
 
             <button class="btn btn-primary btn-full btn-lg" onclick="acceptGift()">
@@ -162,7 +162,7 @@
     <div class="page-hero">
       <div class="container">
         <div class="hero-badge" style="margin:0 auto 1rem;">💍 Set Up Your Wedding Page</div>
-        <h1>Your GiveHeart Dashboard</h1>
+        <h1>Your Altru Dashboard</h1>
         <p>Create your couple profile to start receiving gifts and sharing your Giving Aura.</p>
       </div>
     </div>
@@ -326,7 +326,7 @@
 
   <!-- ─── Footer ─────────────────────────────────────────── -->
   <footer class="site-footer">
-    <p>囍 GiveHeart &nbsp;|&nbsp; <a href="index.html">Home</a> &nbsp;·&nbsp; <a href="donor.html">Send a Gift</a></p>
+    <p>囍 Altru &nbsp;|&nbsp; <a href="index.html">Home</a> &nbsp;·&nbsp; <a href="donor.html">Send a Gift</a></p>
   </footer>
 
   <style>
@@ -344,13 +344,13 @@
     const COUPLE_PASSWORD = '123';
 
     function isLoggedIn() {
-      return sessionStorage.getItem('giveheart_auth') === 'true';
+      return sessionStorage.getItem('altru_auth') === 'true';
     }
 
     function submitLogin() {
       const pwd = document.getElementById('loginPassword').value;
       if (pwd === COUPLE_PASSWORD) {
-        sessionStorage.setItem('giveheart_auth', 'true');
+        sessionStorage.setItem('altru_auth', 'true');
         document.getElementById('err-login').style.display = 'none';
         proceedAfterLogin();
       } else {
@@ -361,7 +361,7 @@
     }
 
     function proceedAfterLogin() {
-      const stored = localStorage.getItem('giveheart_coupleId');
+      const stored = localStorage.getItem('altru_coupleId');
       if (stored) {
         activeCoupleId = stored;
         const couple = getCouple(stored);
@@ -376,7 +376,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const giftId   = getParam('gift');
       const coupleId = getParam('couple');
-      const stored   = localStorage.getItem('giveheart_coupleId');
+      const stored   = localStorage.getItem('altru_coupleId');
 
       if (giftId) {
         // Incoming gift link — no login required (public link shared by donor)
@@ -485,7 +485,7 @@
       saveGift(activeGift);
 
       // Create or update couple profile
-      const storedCoupleId = localStorage.getItem('giveheart_coupleId');
+      const storedCoupleId = localStorage.getItem('altru_coupleId');
       let couple = storedCoupleId ? getCouple(storedCoupleId) : null;
 
       if (!couple) {
@@ -507,7 +507,7 @@
         couple.nricMasked = maskNRIC(nric);
       }
       saveCouple(couple);
-      localStorage.setItem('giveheart_coupleId', couple.id);
+      localStorage.setItem('altru_coupleId', couple.id);
       activeCoupleId = couple.id;
 
       document.getElementById('acceptedSuccess').classList.remove('hidden');
@@ -549,7 +549,7 @@
         createdAt:    Date.now(),
       };
       saveCouple(couple);
-      localStorage.setItem('giveheart_coupleId', couple.id);
+      localStorage.setItem('altru_coupleId', couple.id);
       activeCoupleId = couple.id;
       showDashboard(couple);
     }
