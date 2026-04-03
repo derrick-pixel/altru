@@ -115,7 +115,7 @@
       </div>
 
       <!-- ── Final CTA (shown on last panel) ── -->
-      <div id="storyCta" class="hidden" style="text-align:center;margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.1);">
+      <div id="storyCta" style="text-align:center;margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.1);">
         <p style="color:rgba(255,255,255,0.6);font-size:0.82rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:0.6rem;">Be like Sarah.</p>
         <a href="donor.html" class="btn btn-gold btn-lg">🧧 Send a Better Ang Bao →</a>
       </div>
@@ -517,15 +517,7 @@
 
     // Buttons
     document.getElementById('btnPrev').disabled = idx === 0;
-    document.getElementById('btnNext').disabled = idx === PANELS.length - 1;
-
-    // CTA on last panel
-    const cta = document.getElementById('storyCta');
-    if (idx === PANELS.length - 1) {
-      cta.classList.remove('hidden');
-    } else {
-      cta.classList.add('hidden');
-    }
+    document.getElementById('btnNext').disabled = false;
 
     currentPanel = idx;
     restartProgress();
@@ -549,15 +541,13 @@
 
   function scheduleNext() {
     clearTimeout(autoTimer);
-    if (currentPanel < PANELS.length - 1) {
-      autoTimer = setTimeout(() => {
-        showPanel(currentPanel + 1);
-      }, PANEL_DURATION);
-    }
+    autoTimer = setTimeout(() => {
+      showPanel((currentPanel + 1) % PANELS.length);
+    }, PANEL_DURATION);
   }
 
   function sarahNext() {
-    if (currentPanel < PANELS.length - 1) showPanel(currentPanel + 1);
+    showPanel((currentPanel + 1) % PANELS.length);
   }
   function sarahPrev() {
     if (currentPanel > 0) showPanel(currentPanel - 1);
