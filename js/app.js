@@ -175,7 +175,7 @@ function buildUrl(page, params) {
   Payments go to mobile number 98479776.
   Reference encodes gift ID so payment can be matched.
 */
-const PAYNOW_MOBILE = "98479776";
+const PAYNOW_MOBILE = "+6598479776";
 const PAYNOW_NAME   = "Altru";
 
 function crc16(str) {

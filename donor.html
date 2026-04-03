@@ -434,9 +434,8 @@
       if (!validateStep3()) return;
 
       const total      = parseFloat(document.getElementById('totalAmount').value);
-      const pct        = parseInt(document.getElementById('charitySlider').value);
       const charity    = getCharity(selectedCharityId);
-      const charityAmt = +(total * pct / 100).toFixed(2);
+      const charityAmt = +(parseFloat(document.getElementById('charitySlider').value)).toFixed(2);
       const coupleAmt  = +(total - charityAmt).toFixed(2);
 
       const gift = {
