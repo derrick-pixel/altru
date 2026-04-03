@@ -275,16 +275,18 @@ function renderCharityOptions(containerId, selectedId, onSelect) {
   if (!container) return;
   container.innerHTML = IPC_CHARITIES.map(c => `
     <div class="charity-option-wrapper">
-      <button type="button" class="charity-option ${c.id === selectedId ? 'selected' : ''}"
-              data-charity="${c.id}" onclick="selectCharity('${c.id}', '${containerId}')">
-        <div class="charity-icon">${c.icon}</div>
-        <div style="flex:1;">
-          <div class="charity-name">${c.name}</div>
-          <div class="charity-desc">${c.desc}</div>
-        </div>
-        <button type="button" class="charity-info-btn" onclick="event.stopPropagation();toggleCharityPopup('popup-${c.id}')" title="More info">ℹ</button>
-        <div class="charity-check">${c.id === selectedId ? '✓' : ''}</div>
-      </button>
+      <div class="charity-option-row">
+        <button type="button" class="charity-option ${c.id === selectedId ? 'selected' : ''}"
+                data-charity="${c.id}" onclick="selectCharity('${c.id}', '${containerId}')">
+          <div class="charity-icon">${c.icon}</div>
+          <div style="flex:1;">
+            <div class="charity-name">${c.name}</div>
+            <div class="charity-desc">${c.desc}</div>
+          </div>
+          <div class="charity-check">${c.id === selectedId ? '✓' : ''}</div>
+        </button>
+        <button type="button" class="charity-info-btn" onclick="toggleCharityPopup('popup-${c.id}')" title="More info">ℹ</button>
+      </div>
       <div class="charity-popup hidden" id="popup-${c.id}">
         <div class="charity-popup-body">
           <div class="charity-popup-row">
@@ -297,7 +299,7 @@ function renderCharityOptions(containerId, selectedId, onSelect) {
           </div>
           <div class="charity-popup-row">
             <span class="charity-popup-label">Website</span>
-            <a href="${c.website}" target="_blank" rel="noopener" class="charity-popup-link" onclick="event.stopPropagation()">${c.website.replace('https://', '')}</a>
+            <a href="${c.website}" target="_blank" rel="noopener" class="charity-popup-link">${c.website.replace('https://', '')}</a>
           </div>
         </div>
       </div>
