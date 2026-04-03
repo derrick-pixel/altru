@@ -530,6 +530,7 @@
       if (!email || !email.includes('@')) {
         document.getElementById('err-setupEmail').style.display='block'; ok=false;
       } else      document.getElementById('err-setupEmail').style.display='none';
+      setupCharityId = getSelectedCharity('setupCharityList');
       if (!setupCharityId) {
         document.getElementById('err-setupCharity').style.display='block'; ok=false;
       } else      document.getElementById('err-setupCharity').style.display='none';
@@ -643,16 +644,6 @@
       showToast('Charity selection coming soon!');
     }
 
-    /* ── Override selectCharity for setup ── */
-    window.selectCharity = function(id, containerId) {
-      document.querySelectorAll(`#${containerId} .charity-option`).forEach(el => {
-        const sel = el.dataset.charity === id;
-        el.classList.toggle('selected', sel);
-        el.querySelector('.charity-check').textContent = sel ? '✓' : '';
-      });
-      setupCharityId = id;
-      document.getElementById('err-setupCharity').style.display = 'none';
-    };
   </script>
 </body>
 </html>

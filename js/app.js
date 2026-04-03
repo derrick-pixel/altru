@@ -317,13 +317,20 @@ function toggleCharityPopup(popupId) {
   popup.classList.toggle('hidden');
 }
 
-function selectCharity(id, containerId, callback) {
+/* Tracks the selected charity ID per container */
+const _charitySelections = {};
+
+function selectCharity(id, containerId) {
+  _charitySelections[containerId] = id;
   document.querySelectorAll(`#${containerId} .charity-option`).forEach(el => {
     const selected = el.dataset.charity === id;
     el.classList.toggle('selected', selected);
     el.querySelector('.charity-check').textContent = selected ? '✓' : '';
   });
-  if (callback) callback(id);
+}
+
+function getSelectedCharity(containerId) {
+  return _charitySelections[containerId] || null;
 }
 
 /* ─── Date Helpers ─────────────────────────────────────────── */
