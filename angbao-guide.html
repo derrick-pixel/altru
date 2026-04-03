@@ -571,6 +571,200 @@
     </div>
   </main>
 
+  <!-- ─── Top 10 Venues ──────────────────────────────────── -->
+  <section style="background:var(--warm-white);padding:3rem 0 3.5rem;">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:2rem;">
+        <div class="title-accent" style="display:block;margin:0 auto 0.75rem;"></div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--text);margin-bottom:0.5rem;">🏆 Top 10 Most Popular Venues</h2>
+        <p style="color:var(--text-muted);font-size:0.95rem;">Per-table prices (10 pax, dinner, all-in nett est.), booking lead time &amp; next available slots for 2026.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.25rem;" id="top10Grid"></div>
+
+      <!-- Auspicious Dates 2026 -->
+      <div style="margin-top:2.5rem;background:white;border-radius:var(--radius);padding:1.75rem;border:1px solid var(--border);">
+        <h3 style="font-family:'Playfair Display',serif;color:var(--red);margin-bottom:0.35rem;">🗓️ Auspicious Wedding Dates 2026</h3>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.25rem;">Selected good-fortune dates per the Chinese Lunar Calendar. Popular dates at top venues book out 12–18 months ahead — plan early.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.75rem;" id="auspGrid"></div>
+        <div style="margin-top:1.25rem;background:#fff8f0;border-left:3px solid #e67e22;padding:0.75rem 1rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:0.83rem;color:var(--text-muted);">
+          <strong style="color:#e67e22;">⚠️ Dates to avoid:</strong> 3rd Lunar Month (26 Mar–16 May 2026) · 7th Lunar Month Ghost Festival (13 Aug–10 Sep 2026) · Year Breaker Month (7 Dec 2026–4 Jan 2027). Venues may still be available on these dates but some families prefer to avoid them.
+        </div>
+      </div>
+
+      <!-- Booking Timeline -->
+      <div style="margin-top:1.25rem;background:linear-gradient(135deg,#3D0812,#C8102E);border-radius:var(--radius);padding:1.5rem 1.75rem;color:white;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;">
+        <div style="font-size:2.5rem;flex-shrink:0;">⏳</div>
+        <div style="flex:1;min-width:200px;">
+          <h3 style="margin-bottom:0.3rem;font-size:1.05rem;">How far in advance should you book?</h3>
+          <p style="font-size:0.88rem;color:rgba(255,255,255,0.8);margin:0;">Luxury &amp; heritage hotels (MBS, Capella, Raffles, Fullerton): <strong>18–24 months.</strong> Premium 5-star hotels (Fairmont, Grand Hyatt, Mandarin Oriental): <strong>12–18 months.</strong> Classic &amp; boutique venues: <strong>6–12 months.</strong> For 2027 weddings — start now.</p>
+        </div>
+        <a href="donor.html" class="btn btn-gold" style="flex-shrink:0;">Plan My Gift →</a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  /* ── Top 10 Venue Spotlight Data ── */
+  const TOP10 = [
+    {
+      rank: 1, name: "Marina Bay Sands", tier: "luxury", area: "Marina Bay",
+      dinner: "S$2,900 – S$3,500", lunch: "S$2,400 – S$2,900",
+      minTables: 30, capacity: "up to 6,600 guests",
+      feature: "Southeast Asia's largest ballroom, iconic skyline backdrop",
+      leadTime: "18–24 months", icon: "🌃",
+      slots: ["Jan 2026 (limited weekday)", "Feb 2026 (limited)", "Jun–Jul 2026", "Oct–Nov 2026"],
+      avail: "limited"
+    },
+    {
+      rank: 2, name: "Capella Singapore", tier: "luxury", area: "Sentosa Island",
+      dinner: "S$3,500 – S$4,300", lunch: "S$3,000 – S$3,800",
+      minTables: 10, capacity: "up to 250 guests",
+      feature: "Island resort exclusivity, lush colonial estate, destination wedding feel",
+      leadTime: "18–24 months", icon: "🌴",
+      slots: ["Mar 2026 (select dates)", "Sep 2026 (some availability)", "Nov 2026"],
+      avail: "limited"
+    },
+    {
+      rank: 3, name: "Raffles Hotel Singapore", tier: "luxury", area: "City Hall",
+      dinner: "S$3,100 – S$3,800", lunch: "S$2,800 – S$3,200",
+      minTables: 15, capacity: "up to 400 guests",
+      feature: "Historic 1887 landmark, Jubilee Ballroom, 8-course Chinese menus",
+      leadTime: "18–24 months", icon: "🏛️",
+      slots: ["Jan 2026 (weekdays)", "Apr 2026", "Oct–Nov 2026"],
+      avail: "limited"
+    },
+    {
+      rank: 4, name: "The Fullerton Hotel", tier: "luxury", area: "Marina Bay",
+      dinner: "S$2,800 – S$3,100", lunch: "S$2,500 – S$2,800",
+      minTables: 20, capacity: "up to 48 tables",
+      feature: "Neoclassical heritage building, The Ballroom and intimate Straits Room",
+      leadTime: "12–18 months", icon: "🏦",
+      slots: ["Feb 2026", "May–Jun 2026", "Sep–Oct 2026"],
+      avail: "moderate"
+    },
+    {
+      rank: 5, name: "Shangri-La Singapore", tier: "luxury", area: "Orchard",
+      dinner: "S$2,700 – S$3,300", lunch: "S$2,400 – S$2,900",
+      minTables: 20, capacity: "up to 1,000 guests",
+      feature: "Pillarless Island Ballroom, 20m curved LED wall, lush Valley Wing garden",
+      leadTime: "12–18 months", icon: "🌺",
+      slots: ["Jan–Feb 2026", "Jun 2026", "Oct–Dec 2026"],
+      avail: "moderate"
+    },
+    {
+      rank: 6, name: "Four Seasons Hotel Singapore", tier: "luxury", area: "Orchard",
+      dinner: "S$2,700 – S$3,500", lunch: "S$2,400 – S$2,800",
+      minTables: 12, capacity: "120–400 guests",
+      feature: "Michelin-recommended Jiang-Nan Chun Cantonese cuisine, honeymoon suite",
+      leadTime: "12–18 months", icon: "🌸",
+      slots: ["Mar 2026", "Jun–Jul 2026", "Nov 2026"],
+      avail: "moderate"
+    },
+    {
+      rank: 7, name: "Fairmont Singapore", tier: "premium", area: "City Hall",
+      dinner: "S$2,400 – S$2,800", lunch: "S$2,000 – S$2,400",
+      minTables: 15, capacity: "up to 150 tables",
+      feature: "Pillar-free Fairmont Ballroom, world's largest chandeliers, flexible layout",
+      leadTime: "12–18 months", icon: "✨",
+      slots: ["Jan 2026", "Apr–May 2026", "Aug 2026", "Oct 2026"],
+      avail: "moderate"
+    },
+    {
+      rank: 8, name: "Grand Hyatt Singapore", tier: "premium", area: "Orchard",
+      dinner: "S$2,200 – S$2,600", lunch: "S$1,800 – S$2,100",
+      minTables: 15, capacity: "up to 500 guests",
+      feature: "Multiple ballroom configurations, Chinese &amp; Western menus, city views",
+      leadTime: "9–12 months", icon: "🥂",
+      slots: ["Feb 2026", "May 2026", "Aug–Sep 2026", "Nov–Dec 2026"],
+      avail: "good"
+    },
+    {
+      rank: 9, name: "Goodwood Park Hotel", tier: "classic", area: "Orchard",
+      dinner: "S$1,900 – S$2,400", lunch: "S$1,600 – S$2,000",
+      minTables: 10, capacity: "up to 35 tables",
+      feature: "Heritage hotel, intimate Tudor &amp; Windsor Ballrooms, old-world charm",
+      leadTime: "9–12 months", icon: "🏰",
+      slots: ["Jan–Feb 2026", "Apr 2026", "Jul–Aug 2026", "Oct–Nov 2026"],
+      avail: "good"
+    },
+    {
+      rank: 10, name: "Andaz Singapore", tier: "boutique", area: "Kampong Glam",
+      dinner: "S$2,000 – S$2,600", lunch: "S$1,800 – S$2,200",
+      minTables: 10, capacity: "up to 280 guests",
+      feature: "Jewel-box Glasshouse with floor-to-ceiling windows, outdoor garden terrace",
+      leadTime: "6–12 months", icon: "🪟",
+      slots: ["Feb–Mar 2026", "May–Jun 2026", "Sep 2026", "Nov–Dec 2026"],
+      avail: "good"
+    }
+  ];
+
+  const AVAIL_STYLE = {
+    limited:  { bg: "#fff0f0", color: "#c0392b", label: "Highly Limited" },
+    moderate: { bg: "#fff8e1", color: "#e67e22", label: "Limited Slots" },
+    good:     { bg: "#f0fff4", color: "#27ae60", label: "Slots Available" }
+  };
+
+  const TIER_LABEL = { luxury: "⭐ Luxury", premium: "🥂 Premium", classic: "🏛️ Classic", boutique: "🌿 Boutique" };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.getElementById('top10Grid');
+    TOP10.forEach(v => {
+      const av = AVAIL_STYLE[v.avail];
+      const card = document.createElement('div');
+      card.style.cssText = 'background:white;border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;';
+      card.innerHTML = `
+        <div style="background:linear-gradient(135deg,#3D0812,#C8102E);padding:1rem 1.25rem;display:flex;align-items:center;gap:0.75rem;">
+          <div style="font-size:1.8rem;flex-shrink:0;">${v.icon}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:white;line-height:1.2;">${v.name}</div>
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.65);margin-top:0.2rem;">${v.area} &nbsp;·&nbsp; ${TIER_LABEL[v.tier]}</div>
+          </div>
+          <div style="background:rgba(201,151,58,0.3);color:#F0C060;font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${v.rank}</div>
+        </div>
+        <div style="padding:1rem 1.25rem;flex:1;display:flex;flex-direction:column;gap:0.6rem;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+            <div style="background:var(--warm-white);border-radius:var(--radius-sm);padding:0.5rem 0.65rem;">
+              <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">Dinner / table</div>
+              <div style="font-size:0.92rem;font-weight:700;color:var(--red);margin-top:0.1rem;">${v.dinner}</div>
+            </div>
+            <div style="background:var(--warm-white);border-radius:var(--radius-sm);padding:0.5rem 0.65rem;">
+              <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">Lunch / table</div>
+              <div style="font-size:0.92rem;font-weight:700;color:var(--text);margin-top:0.1rem;">${v.lunch}</div>
+            </div>
+          </div>
+          <div style="font-size:0.82rem;color:var(--text-muted);line-height:1.4;">📌 ${v.feature}</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);">Min <strong style="color:var(--text);">${v.minTables} tables</strong> &nbsp;·&nbsp; ${v.capacity}</div>
+          <div style="background:${av.bg};border-radius:var(--radius-sm);padding:0.55rem 0.75rem;margin-top:auto;">
+            <div style="font-size:0.72rem;font-weight:700;color:${av.color};text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.3rem;">🗓 2026 Availability — ${av.label}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);">${v.slots.join(' &nbsp;·&nbsp; ')}</div>
+            <div style="font-size:0.74rem;color:var(--text-muted);margin-top:0.25rem;">⏳ Book <strong>${v.leadTime}</strong> in advance</div>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    /* ── Auspicious Dates ── */
+    const DATES = [
+      { month: "January 2026",  dates: "3, 5, 7, 8, 10, 16, 17, 19, 22, 29", note: "Strong start to lunar year" },
+      { month: "February 2026", dates: "7, 8, 10, 11, 14, 19, 22, 25, 26",   note: "Post-CNY; 8 Feb especially lucky" },
+      { month: "March 2026",    dates: "3, 6, 9, 10, 13, 15, 18, 21",         note: "Before 3rd Lunar Month" },
+      { month: "April 2026",    dates: "3, 8, 12, 15, 18, 22",                note: "⚠️ Avoid after 16 Apr (3rd Lunar Month)" },
+      { month: "June 2026",     dates: "6, 8, 12, 16, 18, 22, 26",            note: "Popular peak month" },
+      { month: "July 2026",     dates: "2, 6, 8, 12, 18, 22",                 note: "Before Ghost Month; book early" },
+      { month: "October 2026",  dates: "4, 8, 10, 14, 18, 22, 28",            note: "Popular autumn slot" },
+      { month: "November 2026", dates: "6, 8, 12, 14, 18, 22, 28",            note: "Year-end rush begins" },
+    ];
+    const ag = document.getElementById('auspGrid');
+    DATES.forEach(d => {
+      const el = document.createElement('div');
+      el.style.cssText = 'background:white;border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.75rem 0.9rem;';
+      el.innerHTML = `<div style="font-weight:700;color:var(--red);font-size:0.88rem;margin-bottom:0.25rem;">${d.month}</div><div style="font-size:0.78rem;color:var(--text);">${d.dates}</div><div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.2rem;">${d.note}</div>`;
+      ag.appendChild(el);
+    });
+  });
+  </script>
+
   <!-- ─── Footer ─────────────────────────────────────────── -->
   <footer class="site-footer">
     <p>囍 Altru &nbsp;|&nbsp; <a href="index.html">Home</a> &nbsp;·&nbsp; <a href="donor.html">Send a Gift</a> &nbsp;·&nbsp; <a href="couple.html">Couple Portal</a></p>
