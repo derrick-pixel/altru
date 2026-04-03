@@ -102,6 +102,16 @@ const IPC_CHARITIES = [
     ipcNo: "IPC000867",
     website: "https://www.makeawish.org.sg",
   },
+  {
+    id: "couple-choice",
+    name: "Let the Couple Decide",
+    icon: "💑",
+    desc: "The couple will choose their own IPC charity when they accept the gift",
+    beneficiary: "Any IPC-registered charity of the couple's choosing. They will select it when they receive and accept your gift.",
+    ipcNo: "Chosen by couple",
+    website: "https://www.charities.gov.sg/pages/ipcs",
+    coupleChoice: true,
+  },
 ];
 
 function getCharity(id) {
@@ -301,7 +311,41 @@ function shareOrCopy(url, title = 'Altru Gift', text = 'A meaningful gift for yo
 function renderCharityOptions(containerId, selectedId, onSelect) {
   const container = document.getElementById(containerId);
   if (!container) return;
-  container.innerHTML = IPC_CHARITIES.map(c => `
+  container.innerHTML = IPC_CHARITIES.map(c => {
+    if (c.coupleChoice) {
+      return `
+    <div class="charity-option-wrapper charity-option-wrapper--couple-choice">
+      <div class="charity-option-row">
+        <button type="button" class="charity-option charity-option--couple-choice ${c.id === selectedId ? 'selected' : ''}"
+                data-charity="${c.id}" onclick="selectCharity('${c.id}', '${containerId}')">
+          <div class="charity-icon">${c.icon}</div>
+          <div style="flex:1;">
+            <div class="charity-name">${c.name}</div>
+            <div class="charity-desc">${c.desc}</div>
+          </div>
+          <div class="charity-check">${c.id === selectedId ? '✓' : ''}</div>
+        </button>
+        <button type="button" class="charity-info-btn" onclick="toggleCharityPopup('popup-${c.id}')" title="More info">ℹ</button>
+      </div>
+      <div class="charity-popup hidden" id="popup-${c.id}">
+        <div class="charity-popup-body">
+          <div class="charity-popup-row">
+            <span class="charity-popup-label">How it works</span>
+            <span>${c.beneficiary}</span>
+          </div>
+          <div class="charity-popup-row">
+            <span class="charity-popup-label">IPC Number</span>
+            <span class="charity-popup-ipc">${c.ipcNo}</span>
+          </div>
+          <div class="charity-popup-row">
+            <span class="charity-popup-label">Browse charities</span>
+            <a href="${c.website}" target="_blank" rel="noopener" class="charity-popup-link">${c.website.replace('https://', '')}</a>
+          </div>
+        </div>
+      </div>
+    </div>`;
+    }
+    return `
     <div class="charity-option-wrapper">
       <div class="charity-option-row">
         <button type="button" class="charity-option ${c.id === selectedId ? 'selected' : ''}"
@@ -331,8 +375,8 @@ function renderCharityOptions(containerId, selectedId, onSelect) {
           </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function toggleCharityPopup(popupId) {
