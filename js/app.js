@@ -84,11 +84,11 @@ function buildUrl(page, params) {
 /* ─── PayNow QR ────────────────────────────────────────────── */
 /*
   Generates an EMVCo-compatible PayNow QR string.
-  In production, replace PAYNOW_UEN with your platform's UEN.
+  Payments go to mobile number 98479776.
   Reference encodes gift ID so payment can be matched.
 */
-const PAYNOW_UEN  = "T99SS9999A";      // ← replace with real UEN
-const PAYNOW_NAME = "GiveHeart Pte Ltd";
+const PAYNOW_MOBILE = "98479776";
+const PAYNOW_NAME   = "GiveHeart";
 
 function crc16(str) {
   let crc = 0xFFFF;
@@ -108,9 +108,9 @@ function tlv(tag, value) {
 function buildPayNowQR({ amount, reference, expiryDate }) {
   const merchantInfo =
     tlv('00', 'SG.PAYNOW') +
-    tlv('01', '2') +           // proxy type: UEN
-    tlv('02', PAYNOW_UEN) +
-    tlv('03', '0') +           // amount not editable
+    tlv('01', '0') +              // proxy type: 0 = mobile number
+    tlv('02', PAYNOW_MOBILE) +
+    tlv('03', '0') +              // amount not editable
     (expiryDate ? tlv('04', expiryDate) : '');
 
   const addlData = tlv('01', reference.substring(0, 25));
