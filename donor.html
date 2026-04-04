@@ -88,7 +88,7 @@
             <input type="hidden" id="coupleName" />
             <input type="hidden" id="coupleIdField" />
             <div class="couple-dropdown" id="coupleDropdown">
-              <div class="couple-dropdown-trigger" id="coupleDropdownTrigger" onclick="toggleCoupleDropdown()">
+              <div class="couple-dropdown-trigger" id="coupleDropdownTrigger" onclick="toggleCoupleDropdown(event)">
                 <span class="couple-dropdown-placeholder">— Select a couple —</span>
               </div>
               <div class="couple-dropdown-menu hidden" id="coupleDropdownMenu"></div>
@@ -382,7 +382,8 @@
         </div>`;
       }).join('');
     }
-    function toggleCoupleDropdown() {
+    function toggleCoupleDropdown(e) {
+      if (e) e.stopPropagation();
       document.getElementById('coupleDropdownMenu').classList.toggle('hidden');
     }
     function selectCouple(index) {
@@ -414,6 +415,7 @@
       // Populate couple dropdown from registered couples in localStorage
       const store = loadStore();
       let couples = Object.values(store.couples || {})
+        .filter(c => c && c.coupleName)
         .sort((a, b) => a.coupleName.localeCompare(b.coupleName));
       if (couples.length === 0) couples = DEMO_COUPLES;
       renderCoupleDropdown(couples);
