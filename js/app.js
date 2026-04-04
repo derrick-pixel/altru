@@ -33,6 +33,22 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ─── IPC Charities ────────────────────────────────────────── */
 const IPC_CHARITIES = [
   {
+    id: "spirit-of-enterprise", name: "Spirit of Enterprise", icon: "🚀",
+    desc: "Empowering entrepreneurs & local enterprises",
+    beneficiary: "Aspiring and early-stage entrepreneurs in Singapore — providing recognition, mentorship, and resources to help local businesses grow and inspire the next generation.",
+    ipcNo: "IPC000906",
+    uen: "200301515E",
+    website: "https://soe.org.sg",
+  },
+  {
+    id: "singapore-cancer-society", name: "Singapore Cancer Society", icon: "🎗️",
+    desc: "Cancer prevention, care & patient support",
+    beneficiary: "Cancer patients and their families — providing financial assistance, transportation, counselling, home care nursing, and cancer screening programmes island-wide.",
+    ipcNo: "IPC000050",
+    uen: "S65SS0033F",
+    website: "https://www.singaporecancersociety.org.sg",
+  },
+  {
     id: "community-chest", name: "Community Chest", icon: "🤝",
     desc: "Supporting social service agencies across Singapore",
     beneficiary: "Over 80 social service agencies helping vulnerable families, seniors, persons with disabilities, and children in need across Singapore.",
