@@ -236,7 +236,7 @@ function tlv(tag, value) {
   proxy: the mobile number (e.g. "+6598479776") or UEN (e.g. "200104750M")
   name: display name shown on payer's banking app (max 25 chars)
 */
-function buildPayNowQR({ amount, reference, expiryDate, proxyType = '2', proxy, name = PAYNOW_NAME }) {
+function buildPayNowQR({ amount, reference, expiryDate, proxyType = '0', proxy = PAYNOW_MOBILE, name = PAYNOW_NAME }) {
   const merchantInfo =
     tlv('00', 'SG.PAYNOW') +
     tlv('01', proxyType) +
