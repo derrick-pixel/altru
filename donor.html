@@ -85,9 +85,14 @@
 
           <div class="form-group">
             <label class="form-label">Couple's Name <span class="required">*</span></label>
-            <select id="coupleName" class="form-control">
-              <option value="">— Select a couple —</option>
-            </select>
+            <input type="hidden" id="coupleName" />
+            <input type="hidden" id="coupleIdField" />
+            <div class="couple-dropdown" id="coupleDropdown">
+              <div class="couple-dropdown-trigger" id="coupleDropdownTrigger" onclick="toggleCoupleDropdown()">
+                <span class="couple-dropdown-placeholder">— Select a couple —</span>
+              </div>
+              <div class="couple-dropdown-menu hidden" id="coupleDropdownMenu"></div>
+            </div>
             <div class="form-hint">Don't see the couple? Ask them to <a href="couple.html" style="color:var(--red)">register on Altru</a> first.</div>
             <div class="form-error" id="err-coupleName">Please select a couple.</div>
           </div>
@@ -339,33 +344,88 @@
       { id: 'demo-5', coupleName: 'Wei Jie Chua & Hui Lin Zhang',  weddingDate: '2026-10-10' },
     ];
 
+    /* ── Couple avatar helpers ── */
+    const AVATAR_PALETTE = ['#c0392b','#8e44ad','#2980b9','#16a085','#d35400','#27ae60','#c0392b','#1a5276'];
+    function coupleInitials(name) {
+      // Extract first letter of each person's first name (split by &)
+      return name.split('&').map(p => p.trim()[0]?.toUpperCase() || '?').join('');
+    }
+    function avatarColor(name) {
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
+    }
+    function coupleAvatarHTML(couple, size = 40) {
+      if (couple.photoUrl) {
+        return `<img src="${couple.photoUrl}" class="couple-avatar" style="width:${size}px;height:${size}px;" alt="">`;
+      }
+      const initials = coupleInitials(couple.coupleName);
+      const color    = avatarColor(couple.coupleName);
+      return `<div class="couple-avatar couple-avatar--initials" style="width:${size}px;height:${size}px;background:${color};font-size:${Math.round(size*0.35)}px;">${initials}</div>`;
+    }
+
+    /* ── Custom couple dropdown ── */
+    let _coupleList = [];
+    function renderCoupleDropdown(couples) {
+      _coupleList = couples;
+      const menu = document.getElementById('coupleDropdownMenu');
+      menu.innerHTML = couples.map((c, i) => {
+        const dateLabel = c.weddingDate
+          ? `<span class="couple-item-date">${new Date(c.weddingDate).toLocaleDateString('en-SG',{day:'numeric',month:'short',year:'numeric'})}</span>`
+          : '';
+        return `<div class="couple-item" data-index="${i}" onclick="selectCouple(${i})">
+          ${coupleAvatarHTML(c, 40)}
+          <div class="couple-item-info">
+            <div class="couple-item-name">${c.coupleName}</div>
+            ${dateLabel}
+          </div>
+        </div>`;
+      }).join('');
+    }
+    function toggleCoupleDropdown() {
+      document.getElementById('coupleDropdownMenu').classList.toggle('hidden');
+    }
+    function selectCouple(index) {
+      const c = _coupleList[index];
+      document.getElementById('coupleName').value    = c.coupleName;
+      document.getElementById('coupleIdField').value = c.id;
+      const trigger = document.getElementById('coupleDropdownTrigger');
+      const dateLabel = c.weddingDate
+        ? `<span class="couple-item-date">${new Date(c.weddingDate).toLocaleDateString('en-SG',{day:'numeric',month:'short',year:'numeric'})}</span>`
+        : '';
+      trigger.innerHTML = `
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          ${coupleAvatarHTML(c, 36)}
+          <div><div class="couple-item-name">${c.coupleName}</div>${dateLabel}</div>
+        </div>
+        <span class="couple-dropdown-arrow">▾</span>`;
+      document.getElementById('coupleDropdownMenu').classList.add('hidden');
+      document.getElementById('err-coupleName').style.display = 'none';
+    }
+    // Close dropdown when clicking outside
+    document.addEventListener('click', e => {
+      if (!document.getElementById('coupleDropdown').contains(e.target)) {
+        document.getElementById('coupleDropdownMenu')?.classList.add('hidden');
+      }
+    });
+
     /* ── Init ── */
     document.addEventListener('DOMContentLoaded', () => {
       // Populate couple dropdown from registered couples in localStorage
-      const coupleSelect = document.getElementById('coupleName');
       const store = loadStore();
       let couples = Object.values(store.couples || {})
         .sort((a, b) => a.coupleName.localeCompare(b.coupleName));
       if (couples.length === 0) couples = DEMO_COUPLES;
-      couples.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.coupleName;
-        opt.dataset.coupleId = c.id;
-        const dateLabel = c.weddingDate ? ` · ${new Date(c.weddingDate).toLocaleDateString('en-SG', {day:'numeric', month:'short', year:'numeric'})}` : '';
-        opt.textContent = `${c.coupleName}${dateLabel}`;
-        coupleSelect.appendChild(opt);
-      });
+      renderCoupleDropdown(couples);
 
       // Pre-select couple if passed via URL
       const preCouple = getParam('couple');
       const preName   = getParam('name');
       if (preCouple) {
-        // try matching by coupleId stored in option dataset
-        for (const opt of coupleSelect.options) {
-          if (opt.dataset.coupleId === preCouple) { opt.selected = true; break; }
-        }
+        const idx = _coupleList.findIndex(c => c.id === preCouple);
+        if (idx >= 0) selectCouple(idx);
       }
-      if (preName)   document.getElementById('donorName').value  = decodeURIComponent(preName);
+      if (preName) document.getElementById('donorName').value = decodeURIComponent(preName);
 
       // Slider init
       document.getElementById('totalAmount').addEventListener('input', updateSplit);
@@ -472,15 +532,13 @@
       const charityAmt = +(parseFloat(document.getElementById('charitySlider').value)).toFixed(2);
       const coupleAmt  = +(total - charityAmt).toFixed(2);
 
-      const coupleSelect = document.getElementById('coupleName');
-      const selectedOpt  = coupleSelect.options[coupleSelect.selectedIndex];
       const gift = {
         id:          uuid(),
         donorName:   val('donorName'),
         donorEmail:  val('donorEmail'),
         donorPhone:  val('donorPhone'),
         coupleName:  val('coupleName'),
-        coupleId:    selectedOpt?.dataset.coupleId || null,
+        coupleId:    val('coupleIdField') || null,
         totalAmount: total,
         charityAmount: charityAmt,
         personalAmount: coupleAmt,
