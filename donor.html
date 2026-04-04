@@ -412,8 +412,15 @@
 
     /* ── Init ── */
     document.addEventListener('DOMContentLoaded', () => {
-      // Populate couple dropdown: real registered couples first, then demo entries
+      // Purge any malformed test couples (valid names must contain '&')
       const store = loadStore();
+      let dirty = false;
+      Object.entries(store.couples || {}).forEach(([id, c]) => {
+        if (!c || !c.coupleName || !c.coupleName.includes('&')) {
+          delete store.couples[id]; dirty = true;
+        }
+      });
+      if (dirty) saveStore(store);
       const realCouples = Object.values(store.couples || {})
         .filter(c => c && c.coupleName && !c.id.startsWith('demo-'))
         .sort((a, b) => a.coupleName.localeCompare(b.coupleName));
