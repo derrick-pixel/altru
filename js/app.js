@@ -37,13 +37,15 @@ const IPC_CHARITIES = [
     desc: "Supporting social service agencies across Singapore",
     beneficiary: "Over 80 social service agencies helping vulnerable families, seniors, persons with disabilities, and children in need across Singapore.",
     ipcNo: "IPC000072",
-    website: "https://www.giving.sg/community-chest",
+    uen: "T08GB0034K",
+    website: "https://www.comchest.gov.sg",
   },
   {
     id: "singapore-red-cross", name: "Singapore Red Cross", icon: "🏥",
     desc: "Humanitarian aid & emergency relief",
     beneficiary: "Disaster survivors, blood donation recipients, the elderly, and vulnerable communities both locally and internationally.",
     ipcNo: "IPC000080",
+    uen: "S86CC0370E",
     website: "https://www.redcross.sg",
   },
   {
@@ -51,6 +53,7 @@ const IPC_CHARITIES = [
     desc: "Supporting children & families battling cancer",
     beneficiary: "Children aged 0–19 diagnosed with cancer, and their families — providing financial aid, counselling, and home nursing support.",
     ipcNo: "IPC000438",
+    uen: "201934434R",
     website: "https://www.ccf.org.sg",
   },
   {
@@ -58,6 +61,7 @@ const IPC_CHARITIES = [
     desc: "Prevention of cruelty to animals",
     beneficiary: "Stray, abandoned, and mistreated animals in Singapore — providing rescue, shelter, veterinary care, and rehoming services.",
     ipcNo: "IPC000351",
+    uen: "S61SS0060B",
     website: "https://www.spca.org.sg",
   },
   {
@@ -65,6 +69,7 @@ const IPC_CHARITIES = [
     desc: "Caring for the intellectually disabled",
     beneficiary: "Persons with intellectual disabilities and their caregivers — offering education, training, employment support, and residential care.",
     ipcNo: "IPC000367",
+    uen: "202235654G",
     website: "https://www.minds.org.sg",
   },
   {
@@ -72,6 +77,7 @@ const IPC_CHARITIES = [
     desc: "Kidney care & dialysis services",
     beneficiary: "Over 6,000 kidney failure patients receiving subsidised dialysis treatment across NKF centres, regardless of ability to pay.",
     ipcNo: "IPC000108",
+    uen: "200104750M",
     website: "https://www.nkfs.org",
   },
   {
@@ -79,6 +85,7 @@ const IPC_CHARITIES = [
     desc: "Child protection & family services",
     beneficiary: "At-risk children and youth aged 0–18, including abuse victims, children from low-income families, and those with special needs.",
     ipcNo: "IPC000387",
+    uen: "S62SS0057G",
     website: "https://www.childrensociety.org.sg",
   },
   {
@@ -86,20 +93,23 @@ const IPC_CHARITIES = [
     desc: "Gender equality & support services",
     beneficiary: "Women facing workplace discrimination, sexual violence survivors, and individuals seeking gender equality support and legal guidance.",
     ipcNo: "IPC000653",
+    uen: "S85SS0089B",
     website: "https://www.aware.org.sg",
   },
   {
-    id: "alzheimers", name: "Alzheimer's Disease Association", icon: "🧠",
+    id: "dementia-sg", name: "Dementia Singapore", icon: "🧠",
     desc: "Dementia care & caregiver support",
     beneficiary: "Persons living with dementia and their caregivers — providing day care, home care, counselling, and caregiver training.",
     ipcNo: "IPC000440",
-    website: "https://www.alz.org.sg",
+    uen: "202111519K",
+    website: "https://dementia.org.sg",
   },
   {
     id: "make-a-wish", name: "Make-A-Wish Foundation Singapore", icon: "⭐",
     desc: "Granting wishes to critically ill children",
     beneficiary: "Children aged 3–18 with life-threatening medical conditions — granting heartfelt wishes to bring joy and hope to their lives.",
     ipcNo: "IPC000867",
+    uen: "200201965D",
     website: "https://www.makeawish.org.sg",
   },
   {
@@ -109,6 +119,7 @@ const IPC_CHARITIES = [
     desc: "The couple will choose their own IPC charity when they accept the gift",
     beneficiary: "Any IPC-registered charity of the couple's choosing. They will select it when they receive and accept your gift.",
     ipcNo: "Chosen by couple",
+    uen: null,
     website: "https://www.charities.gov.sg/pages/ipcs",
     coupleChoice: true,
   },
@@ -203,11 +214,17 @@ function tlv(tag, value) {
   return `${tag}${String(value.length).padStart(2, '0')}${value}`;
 }
 
-function buildPayNowQR({ amount, reference, expiryDate }) {
+/*
+  buildPayNowQR — generates an EMVCo PayNow QR string.
+  proxyType: '0' = mobile number, '2' = UEN (business/charity)
+  proxy: the mobile number (e.g. "+6598479776") or UEN (e.g. "200104750M")
+  name: display name shown on payer's banking app (max 25 chars)
+*/
+function buildPayNowQR({ amount, reference, expiryDate, proxyType = '2', proxy, name = PAYNOW_NAME }) {
   const merchantInfo =
     tlv('00', 'SG.PAYNOW') +
-    tlv('01', '0') +              // proxy type: 0 = mobile number
-    tlv('02', PAYNOW_MOBILE) +
+    tlv('01', proxyType) +
+    tlv('02', proxy) +
     tlv('03', '0') +              // amount not editable
     (expiryDate ? tlv('04', expiryDate) : '');
 
@@ -221,13 +238,37 @@ function buildPayNowQR({ amount, reference, expiryDate }) {
     tlv('53', '702') +
     tlv('54', parseFloat(amount).toFixed(2)) +
     tlv('58', 'SG') +
-    tlv('59', PAYNOW_NAME.substring(0, 25)) +
+    tlv('59', name.substring(0, 25)) +
     tlv('60', 'Singapore') +
     tlv('62', addlData) +
     '6304';
 
   const checksum = crc16(payload).toString(16).toUpperCase().padStart(4, '0');
   return payload + checksum;
+}
+
+/* Convenience: build a charity PayNow QR using the charity's UEN */
+function buildCharityPayNowQR({ charity, amount, reference, expiryDate }) {
+  return buildPayNowQR({
+    amount,
+    reference,
+    expiryDate,
+    proxyType: '2',
+    proxy: charity.uen,
+    name: charity.name,
+  });
+}
+
+/* Convenience: build a mobile PayNow QR (for couple's share) */
+function buildMobilePayNowQR({ mobile, name, amount, reference, expiryDate }) {
+  return buildPayNowQR({
+    amount,
+    reference,
+    expiryDate,
+    proxyType: '0',
+    proxy: mobile,
+    name,
+  });
 }
 
 function renderQR(containerId, content, size = 200) {
