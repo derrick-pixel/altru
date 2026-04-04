@@ -330,25 +330,31 @@
     let selectedCharityId = null;
     let currentGift = null;
 
+    /* ── Demo seed couples (shown when no real couples are registered) ── */
+    const DEMO_COUPLES = [
+      { id: 'demo-1', coupleName: 'Darren Lim & Priya Nair',      weddingDate: '2026-06-14' },
+      { id: 'demo-2', coupleName: 'Jonathan Tan & Sarah Chen',     weddingDate: '2026-07-18' },
+      { id: 'demo-3', coupleName: 'Marcus Ng & Joanna Krishnan',   weddingDate: '2026-08-08' },
+      { id: 'demo-4', coupleName: 'Ravi Subramaniam & Mei Ling Ong', weddingDate: '2026-09-20' },
+      { id: 'demo-5', coupleName: 'Wei Jie Chua & Hui Lin Zhang',  weddingDate: '2026-10-10' },
+    ];
+
     /* ── Init ── */
     document.addEventListener('DOMContentLoaded', () => {
       // Populate couple dropdown from registered couples in localStorage
       const coupleSelect = document.getElementById('coupleName');
       const store = loadStore();
-      const couples = Object.values(store.couples || {})
+      let couples = Object.values(store.couples || {})
         .sort((a, b) => a.coupleName.localeCompare(b.coupleName));
-      if (couples.length === 0) {
-        coupleSelect.innerHTML = '<option value="">— No couples registered yet —</option>';
-      } else {
-        couples.forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c.coupleName;
-          opt.dataset.coupleId = c.id;
-          const dateLabel = c.weddingDate ? ` · ${new Date(c.weddingDate).toLocaleDateString('en-SG', {day:'numeric', month:'short', year:'numeric'})}` : '';
-          opt.textContent = `${c.coupleName}${dateLabel}`;
-          coupleSelect.appendChild(opt);
-        });
-      }
+      if (couples.length === 0) couples = DEMO_COUPLES;
+      couples.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.coupleName;
+        opt.dataset.coupleId = c.id;
+        const dateLabel = c.weddingDate ? ` · ${new Date(c.weddingDate).toLocaleDateString('en-SG', {day:'numeric', month:'short', year:'numeric'})}` : '';
+        opt.textContent = `${c.coupleName}${dateLabel}`;
+        coupleSelect.appendChild(opt);
+      });
 
       // Pre-select couple if passed via URL
       const preCouple = getParam('couple');
