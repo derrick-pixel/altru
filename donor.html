@@ -85,9 +85,11 @@
 
           <div class="form-group">
             <label class="form-label">Couple's Name <span class="required">*</span></label>
-            <input type="text" id="coupleName" class="form-control" placeholder="e.g. Wei Jie &amp; Lin Hui" maxlength="60" />
-            <div class="form-hint">As you'd like it to appear on the gift</div>
-            <div class="form-error" id="err-coupleName">Please enter the couple's name.</div>
+            <select id="coupleName" class="form-control">
+              <option value="">— Select a couple —</option>
+            </select>
+            <div class="form-hint">Don't see the couple? Ask them to <a href="couple.html" style="color:var(--red)">register on Altru</a> first.</div>
+            <div class="form-error" id="err-coupleName">Please select a couple.</div>
           </div>
 
           <div class="form-group">
@@ -330,10 +332,33 @@
 
     /* ── Init ── */
     document.addEventListener('DOMContentLoaded', () => {
-      // Pre-fill couple name if passed via URL
+      // Populate couple dropdown from registered couples in localStorage
+      const coupleSelect = document.getElementById('coupleName');
+      const store = loadStore();
+      const couples = Object.values(store.couples || {})
+        .sort((a, b) => a.coupleName.localeCompare(b.coupleName));
+      if (couples.length === 0) {
+        coupleSelect.innerHTML = '<option value="">— No couples registered yet —</option>';
+      } else {
+        couples.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.coupleName;
+          opt.dataset.coupleId = c.id;
+          const dateLabel = c.weddingDate ? ` · ${new Date(c.weddingDate).toLocaleDateString('en-SG', {day:'numeric', month:'short', year:'numeric'})}` : '';
+          opt.textContent = `${c.coupleName}${dateLabel}`;
+          coupleSelect.appendChild(opt);
+        });
+      }
+
+      // Pre-select couple if passed via URL
       const preCouple = getParam('couple');
       const preName   = getParam('name');
-      if (preCouple) document.getElementById('coupleName').value = decodeURIComponent(preCouple);
+      if (preCouple) {
+        // try matching by coupleId stored in option dataset
+        for (const opt of coupleSelect.options) {
+          if (opt.dataset.coupleId === preCouple) { opt.selected = true; break; }
+        }
+      }
       if (preName)   document.getElementById('donorName').value  = decodeURIComponent(preName);
 
       // Slider init
@@ -441,12 +466,15 @@
       const charityAmt = +(parseFloat(document.getElementById('charitySlider').value)).toFixed(2);
       const coupleAmt  = +(total - charityAmt).toFixed(2);
 
+      const coupleSelect = document.getElementById('coupleName');
+      const selectedOpt  = coupleSelect.options[coupleSelect.selectedIndex];
       const gift = {
         id:          uuid(),
         donorName:   val('donorName'),
         donorEmail:  val('donorEmail'),
         donorPhone:  val('donorPhone'),
         coupleName:  val('coupleName'),
+        coupleId:    selectedOpt?.dataset.coupleId || null,
         totalAmount: total,
         charityAmount: charityAmt,
         personalAmount: coupleAmt,
