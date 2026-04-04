@@ -412,12 +412,14 @@
 
     /* ── Init ── */
     document.addEventListener('DOMContentLoaded', () => {
-      // Populate couple dropdown from registered couples in localStorage
+      // Populate couple dropdown: real registered couples first, then demo entries
       const store = loadStore();
-      let couples = Object.values(store.couples || {})
-        .filter(c => c && c.coupleName)
+      const realCouples = Object.values(store.couples || {})
+        .filter(c => c && c.coupleName && !c.id.startsWith('demo-'))
         .sort((a, b) => a.coupleName.localeCompare(b.coupleName));
-      if (couples.length === 0) couples = DEMO_COUPLES;
+      const couples = realCouples.length > 0
+        ? [...realCouples, ...DEMO_COUPLES]
+        : DEMO_COUPLES;
       renderCoupleDropdown(couples);
 
       // Pre-select couple if passed via URL
