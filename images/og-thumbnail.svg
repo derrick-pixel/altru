@@ -59,8 +59,8 @@
   <text x="470" y="451" font-family="Arial, sans-serif" font-size="20" fill="white" text-anchor="middle">📱 PayNow</text>
 
   <!-- Big stat — right side -->
-  <text x="820" y="270" font-family="Georgia, serif" font-size="120" font-weight="700" fill="url(#accent)" text-anchor="middle" filter="url(#glow)">92%</text>
-  <text x="820" y="315" font-family="Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.7)" text-anchor="middle" letter-spacing="2">TO CHARITY</text>
+  <text x="820" y="270" font-family="Georgia, serif" font-size="120" font-weight="700" fill="url(#accent)" text-anchor="middle" filter="url(#glow)">100%</text>
+  <text x="820" y="315" font-family="Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.7)" text-anchor="middle" letter-spacing="2">TO CHARITY*</text>
 
   <!-- Small stat row -->
   <text x="680" y="390" font-family="Georgia, serif" font-size="38" font-weight="700" fill="white" text-anchor="middle">S$284K</text>
@@ -75,7 +75,7 @@
   <rect x="600" y="448" width="500" height="1" fill="rgba(255,255,255,0.15)"/>
 
   <!-- URL / domain -->
-  <text x="820" y="490" font-family="Arial, sans-serif" font-size="20" fill="rgba(255,255,255,0.45)" text-anchor="middle" letter-spacing="1">derrick-pixel.github.io/claude</text>
+  <text x="820" y="490" font-family="Arial, sans-serif" font-size="20" fill="rgba(255,255,255,0.45)" text-anchor="middle" letter-spacing="1">altru.asia</text>
 
   <!-- Gold bottom bar -->
   <rect x="0" y="624" width="1200" height="6" fill="url(#accent)"/>
