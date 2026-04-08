@@ -220,13 +220,15 @@
                 <h4 style="color:var(--red);margin:0;">🎁 Your Gift Summary</h4>
                 <span class="badge badge-red" id="s4GiftId"></span>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;font-size:0.9rem;">
-                <div><span class="text-muted">To:</span> <strong id="s4CoupleName">—</strong></div>
-                <div><span class="text-muted">From:</span> <strong id="s4DonorName">—</strong></div>
-                <div><span class="text-muted">Total:</span> <strong id="s4Total" class="text-red">—</strong></div>
-                <div><span class="text-muted">Charity:</span> <strong id="s4CharityName">—</strong></div>
-                <div><span class="text-muted">Charity Amount:</span> <strong id="s4CharityAmt" class="text-red">—</strong></div>
-                <div><span class="text-muted">Couple Receives:</span> <strong id="s4CoupleAmt" class="text-gold">—</strong></div>
+              <div style="display:grid;grid-template-columns:auto 1fr auto 1fr;gap:0.4rem 0.5rem;font-size:0.9rem;align-items:baseline;">
+                <span class="text-muted">To:</span> <strong id="s4CoupleName">—</strong>
+                <span class="text-muted">From:</span> <strong id="s4DonorName">—</strong>
+                <span class="text-muted">Total:</span> <strong id="s4Total" class="text-red">—</strong>
+                <span class="text-muted">Charity:</span> <strong id="s4CharityName">—</strong>
+                <span class="text-muted">Charity Amount:</span> <strong id="s4CharityAmt" class="text-red">—</strong>
+                <span class="text-muted">Couple Receives:</span> <strong id="s4CoupleAmt" class="text-gold">—</strong>
+                <span class="text-muted">Tax Deductible:</span> <strong id="s4TaxDeduct" style="color:var(--green, #2e7d32);">—</strong>
+                <span></span> <span></span>
               </div>
             </div>
           </div>
@@ -575,6 +577,7 @@
       document.getElementById('s4CharityName').textContent  = gift.charityName;
       document.getElementById('s4CharityAmt').textContent   = fmt(gift.charityAmount);
       document.getElementById('s4CoupleAmt').textContent    = fmt(gift.personalAmount);
+      document.getElementById('s4TaxDeduct').textContent    = fmt(gift.charityAmount * 2.5);
       document.getElementById('s4CoupleNameLink').textContent = gift.coupleName;
 
       // PayNow QR
