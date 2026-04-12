@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>Send a Gift — Altru</title>
   <meta property="og:title" content="Send a Giving Red Packet — Altru" />
   <meta property="og:description" content="Bless the couple and a charity with one gift. Set your amount, pick an IPC charity, pay via PayNow. 95% goes to charity." />
@@ -367,18 +370,25 @@
     }
 
     /* ── Custom couple dropdown ── */
+    // HTML escape helper — guard against stored-XSS via coupleName from localStorage
+    function _escDonor(s) {
+      return String(s ?? '').replace(/[&<>"'`=\/]/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;','=':'&#61;','/':'&#47;'
+      }[c]));
+    }
+
     let _coupleList = [];
     function renderCoupleDropdown(couples) {
       _coupleList = couples;
       const menu = document.getElementById('coupleDropdownMenu');
       menu.innerHTML = couples.map((c, i) => {
         const dateLabel = c.weddingDate
-          ? `<span class="couple-item-date">${new Date(c.weddingDate).toLocaleDateString('en-SG',{day:'numeric',month:'short',year:'numeric'})}</span>`
+          ? `<span class="couple-item-date">${_escDonor(new Date(c.weddingDate).toLocaleDateString('en-SG',{day:'numeric',month:'short',year:'numeric'}))}</span>`
           : '';
         return `<div class="couple-item" data-index="${i}" onclick="selectCouple(${i})">
           ${coupleAvatarHTML(c, 40)}
           <div class="couple-item-info">
-            <div class="couple-item-name">${c.coupleName}</div>
+            <div class="couple-item-name">${_escDonor(c.coupleName)}</div>
             ${dateLabel}
           </div>
         </div>`;
@@ -399,7 +409,7 @@
       trigger.innerHTML = `
         <div style="display:flex;align-items:center;gap:0.75rem;">
           ${coupleAvatarHTML(c, 36)}
-          <div><div class="couple-item-name">${c.coupleName}</div>${dateLabel}</div>
+          <div><div class="couple-item-name">${_escDonor(c.coupleName)}</div>${dateLabel}</div>
         </div>
         <span class="couple-dropdown-arrow">▾</span>`;
       document.getElementById('coupleDropdownMenu').classList.add('hidden');

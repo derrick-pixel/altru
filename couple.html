@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>Wedding Dashboard — Altru</title>
   <meta property="og:title" content="Set Up Your Wedding Giving Page — Altru" />
   <meta property="og:description" content="Create your couple dashboard, receive gifts, and channel blessings to a charity you love. 250% IRAS tax relief included." />
@@ -357,15 +360,29 @@
     let activeGift = null;
     let setupCharityId = null;
 
-    const COUPLE_PASSWORD = '123';
+    // ─── DEMO-ONLY CLIENT-SIDE GATE ───────────────────────────────
+    // This is a cosmetic gate for the demo site only. All couple
+    // data lives in localStorage on the visitor's own device, so
+    // there is no server-side secret to protect. Any real deployment
+    // must move auth to a backend (OAuth / magic link / session).
+    // The gate password is stored as a SHA-256 hash so it does not
+    // appear in plain text in the page source.
+    // Current demo hash = SHA-256("altru-demo-2026")
+    const COUPLE_PASSWORD_HASH = '065f5f56fe6171422face99a5beee28b25a3823d1e925b7a754a7c6aa27edfab';
+
+    async function sha256Hex(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
 
     function isLoggedIn() {
       return sessionStorage.getItem('altru_auth') === 'true';
     }
 
-    function submitLogin() {
+    async function submitLogin() {
       const pwd = document.getElementById('loginPassword').value;
-      if (pwd === COUPLE_PASSWORD) {
+      const hash = await sha256Hex(pwd);
+      if (hash === COUPLE_PASSWORD_HASH) {
         sessionStorage.setItem('altru_auth', 'true');
         document.getElementById('err-login').style.display = 'none';
         proceedAfterLogin();
@@ -570,6 +587,13 @@
       showDashboard(couple);
     }
 
+    /* ── HTML escape helper (prevents stored-XSS from localStorage data) ── */
+    function _esc(s) {
+      return String(s ?? '').replace(/[&<>"'`=\/]/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;','=':'&#61;','/':'&#47;'
+      }[c]));
+    }
+
     /* ── Dashboard Population ── */
     function populateDashboard(couple) {
       document.getElementById('dashCoupleName').textContent = couple.coupleName;
@@ -583,9 +607,9 @@
       // Featured charity
       const fc = document.getElementById('dashFeaturedCharity');
       fc.innerHTML = `
-        <div class="charity-icon">${couple.featuredCharityIcon || '🤝'}</div>
+        <div class="charity-icon">${_esc(couple.featuredCharityIcon || '🤝')}</div>
         <div>
-          <div class="charity-name">${couple.featuredCharityName || '—'}</div>
+          <div class="charity-name">${_esc(couple.featuredCharityName || '—')}</div>
           <div class="charity-desc">IPC Certified · 250% Tax Deductible</div>
         </div>
         <span class="badge badge-gold">Featured</span>
@@ -623,16 +647,16 @@
       } else {
         listEl.innerHTML = gifts.map(g => `
           <div class="gift-item">
-            <div class="gift-avatar">${g.donorName[0].toUpperCase()}</div>
+            <div class="gift-avatar">${_esc((g.donorName || '?')[0].toUpperCase())}</div>
             <div class="gift-info">
-              <div class="gift-name">${g.donorName}</div>
-              <div class="gift-meta">${g.charityIcon} ${g.charityName} &nbsp;·&nbsp; ${formatDate(g.createdAt)}</div>
+              <div class="gift-name">${_esc(g.donorName)}</div>
+              <div class="gift-meta">${_esc(g.charityIcon)} ${_esc(g.charityName)} &nbsp;·&nbsp; ${_esc(formatDate(g.createdAt))}</div>
             </div>
             <div class="gift-amounts">
               <div class="gift-total">${fmt(g.totalAmount)}</div>
               <div class="gift-charity-amt">❤️ ${fmt(g.charityAmount)} to charity</div>
             </div>
-            <span class="badge badge-${g.status==='claimed'?'green':'gray'}" style="margin-left:0.5rem;">${g.status}</span>
+            <span class="badge badge-${g.status==='claimed'?'green':'gray'}" style="margin-left:0.5rem;">${_esc(g.status)}</span>
           </div>
         `).join('');
       }
