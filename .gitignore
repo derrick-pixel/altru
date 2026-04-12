@@ -9,3 +9,8 @@ node_modules/
 *.pem
 *.key
 secrets/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
